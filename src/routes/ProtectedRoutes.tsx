@@ -1,13 +1,44 @@
-import { ProtectedRoutesWrapper } from "./ProtectedRoutesWrapper";
+import { Navigate, RouteObject } from "react-router-dom";
+import AdminLayout from "../layouts/AdminLayout/AdminLayout";
+import AdminDashboard from "../pages/AdminDashboard";
+import RequireAuth from "../components/RequiredAuth";
+import AdminBookPage from "../pages/AdminBookPage";
+import AdminCategoryPage from "../pages/AdminCategoryPage";
+import AdminOrderPage from "../pages/AdminOrderPage";
+import AdminUserPage from "../pages/AdminUserPage";
 
-export const protectedRoutes = [
+export const protectedRoutes: RouteObject[] = [
   {
-    path: "/",
-    element: <ProtectedRoutesWrapper />,
+    path: "/admin",
+    element: (
+      <RequireAuth>
+        <AdminLayout />
+      </RequireAuth>
+    ),
     children: [
       {
-        path: "/admin",
-        element: <>Admin page</>,
+        index: true,
+        element: <Navigate to="/admin/dashboard" replace />,
+      },
+      {
+        path: "dashboard",
+        element: <AdminDashboard />,
+      },
+      {
+        path: "books",
+        element: <AdminBookPage />,
+      },
+      {
+        path: "categories",
+        element: <AdminCategoryPage />,
+      },
+      {
+        path: "orders",
+        element: <AdminOrderPage />,
+      },
+      {
+        path: "users",
+        element: <AdminUserPage />,
       },
     ],
   },

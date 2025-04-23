@@ -9,6 +9,7 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   user: any | null;
+  role: string;
   isLoading: boolean;
   error: string | null;
   isLogin: boolean;
@@ -39,6 +40,7 @@ const useAuthStore = create<AuthStore>()(
       accessToken: null,
       refreshToken: null,
       user: null,
+      role: "GUEST",
       isLoading: false,
       error: null,
       isLogin: false,
@@ -61,6 +63,7 @@ const useAuthStore = create<AuthStore>()(
           accessToken: null,
           refreshToken: null,
           user: null,
+          role: "GUEST",
           isLoading: false,
           error: null,
           isLogin: false,
