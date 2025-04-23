@@ -1,17 +1,49 @@
-import AdminLayout from "../layouts/AdminLayout/AdminLayout";
-import LoginPage from "../pages/Login/Login";
+import { RouteObject } from "react-router-dom";
+import PublicLayout from "../layouts/PublicLayout/PublicLayout";
+import HomePage from "../pages/HomePage";
+import LoginPage from "../pages/Login";
 
-export const publicRoutes = [
+export const publicRoutes: RouteObject[] = [
     {
-        path: "/",
-        element: <div>Home Page</div>,
+      path: "/",
+      element: <PublicLayout />,
+      children: [
+        {
+          index: true,
+          element: <HomePage />,
+        },
+        // {
+        //   path: "books",
+        //   element: <BooksPage />,
+        // },
+        // {
+        //   path: "books/:id",
+        //   element: <BookDetailsPage />,
+        // },
+        // {
+        //   path: "categories",
+        //   element: <CategoriesPage />,
+        // },
+        {
+          path: "login",
+          element: <LoginPage />,
+        },
+        // {
+        //   path: "register",
+        //   element: <RegisterPage />,
+        // },
+        // {
+        //   path: "profile",
+        //   element: <ProfilePage />,
+        // },
+        // {
+        //   path: "orders",
+        //   element: <OrdersPage />,
+        // },
+        // {
+        //   path: "*",
+        //   element: <NotFoundPage />,
+        // }
+      ],
     },
-    {
-        path: "/login",
-        element: <LoginPage/>,
-    },
-    {
-        path: "/login-1",
-        element: <AdminLayout/>,
-    }
-];
+  ];
