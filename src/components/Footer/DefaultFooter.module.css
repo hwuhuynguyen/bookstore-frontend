@@ -1,0 +1,17 @@
+.footer {
+  margin-top: 2rem; /* Adjust based on theme.spacing.xl */
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  background-color: var(--footer-bg-color); /* Set dynamically in your theme */
+  border-top: 1px solid var(--footer-border-color); /* Set dynamically in your theme */
+}
+
+@media (max-width: 768px) {
+  .footerLinks {
+    margin-top: 1rem; /* Adjust based on theme.spacing.xl */
+  }
+}
+
+.footerLinks {
+    align-items: center;
+}

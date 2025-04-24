@@ -1,19 +1,20 @@
+import { Image, Text } from "@mantine/core";
 import React from "react";
 import { Link } from "react-router-dom";
+import appLogo from "./../../assets/AppLogo.png";
 
 function AppLogo() {
-	return (
-		<Link
-			className={`select-none flex flex-col items-center justify-center out-line-orange-100 out-line-4`}
-			to="/"
-		>
-			<h1
-				className={`text-primary-dark font-encode py-3 font-medium text-2xl drop-shadow-lg `}
-			>
-				GraduationStore
-			</h1>
-		</Link>
-	);
+  return (
+    <Link
+      className={`select-none flex flex-row items-center justify-center out-line-orange-100 out-line-4`}
+      to="/"
+    >
+      <Image radius="md" h={56} src={appLogo} />
+      <Text style={{ fontFamily: "Fascinate Inline, system-ui", fontSize: "xx-large", color: "darkcyan" }}>
+        BookRec
+      </Text>
+    </Link>
+  );
 }
 
 export default AppLogo;
