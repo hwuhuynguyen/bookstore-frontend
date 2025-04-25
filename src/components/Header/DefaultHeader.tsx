@@ -84,7 +84,15 @@ function DefaultHeader() {
     <Stack
       gap={0}
       ref={refHeaderStack}
-      style={{ maxWidth: "1320px", margin: "auto", marginBottom: "24px" }}
+      style={{
+        maxWidth: "1320px",
+        margin: "auto",
+        marginBottom: "24px",
+        position: "sticky",
+        top: 0,
+        zIndex: 2,
+        backgroundColor: "white",
+      }}
     >
       <Group gap="apart" py={theme.spacing.md} justify="space-between" mx={16}>
         <AppLogo />

@@ -2,6 +2,7 @@ import { RouteObject } from "react-router-dom";
 import PublicLayout from "../layouts/PublicLayout/PublicLayout";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/Login";
+import ClientSearchBookPage from "../pages/ClientSearchBookPage";
 
 export const publicRoutes: RouteObject[] = [
     {
@@ -12,10 +13,10 @@ export const publicRoutes: RouteObject[] = [
           index: true,
           element: <HomePage />,
         },
-        // {
-        //   path: "books",
-        //   element: <BooksPage />,
-        // },
+        {
+          path: "books",
+          element: <ClientSearchBookPage />,
+        },
         // {
         //   path: "books/:id",
         //   element: <BookDetailsPage />,
