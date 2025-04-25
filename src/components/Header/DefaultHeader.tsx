@@ -90,7 +90,7 @@ function DefaultHeader() {
         marginBottom: "24px",
         position: "sticky",
         top: 0,
-        zIndex: 2,
+        zIndex: 3,
         backgroundColor: "white",
       }}
     >

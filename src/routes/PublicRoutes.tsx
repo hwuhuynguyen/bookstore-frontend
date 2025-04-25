@@ -3,6 +3,7 @@ import PublicLayout from "../layouts/PublicLayout/PublicLayout";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/Login";
 import ClientSearchBookPage from "../pages/ClientSearchBookPage";
+import ClientBookDetailPage from "../pages/ClientBookDetailPage";
 
 export const publicRoutes: RouteObject[] = [
     {
@@ -17,10 +18,10 @@ export const publicRoutes: RouteObject[] = [
           path: "books",
           element: <ClientSearchBookPage />,
         },
-        // {
-        //   path: "books/:id",
-        //   element: <BookDetailsPage />,
-        // },
+        {
+          path: "books/:id",
+          element: <ClientBookDetailPage />,
+        },
         // {
         //   path: "categories",
         //   element: <CategoriesPage />,
