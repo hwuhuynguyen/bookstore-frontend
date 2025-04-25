@@ -1,0 +1,20 @@
+/* MyComponent.module.css */
+.header {
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #ccc;
+  background-color: #fff;
+}
+
+.iconGroup {
+  background-color: #f1f1f1;
+  border-radius: 8px;
+}
+
+.iconGroup:hover {
+  background-color: #e0e0e0;
+}
+
+.iconGroup:active {
+  background-color: #007bff;
+  color: white;
+}
