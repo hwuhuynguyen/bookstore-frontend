@@ -266,9 +266,11 @@ function DefaultHeader() {
             >
               <CategoryMenu setOpenedCategoryMenu={setOpenedCategoryMenu}/>
             </Popover> */}
-          <Button variant="subtle" radius="md">
-            New arrivals
-          </Button>
+          <Link to="/books">
+            <Button variant="subtle" radius="md">
+              New arrivals
+            </Button>
+          </Link>
           <Button variant="subtle" color="green" radius="md">
             Trending
           </Button>

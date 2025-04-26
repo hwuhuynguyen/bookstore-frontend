@@ -4,6 +4,7 @@ import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/Login";
 import ClientSearchBookPage from "../pages/ClientSearchBookPage";
 import ClientBookDetailPage from "../pages/ClientBookDetailPage";
+import ClientShoppingCart from "../pages/ClientShoppingCart";
 
 export const publicRoutes: RouteObject[] = [
     {
@@ -29,6 +30,10 @@ export const publicRoutes: RouteObject[] = [
         {
           path: "login",
           element: <LoginPage />,
+        },
+        {
+          path: "cart",
+          element: <ClientShoppingCart />,
         },
         // {
         //   path: "register",

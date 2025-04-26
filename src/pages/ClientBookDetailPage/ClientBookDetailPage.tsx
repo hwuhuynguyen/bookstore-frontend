@@ -402,6 +402,7 @@ export default function ClientBookDetailPage() {
                 color="cyan"
                 leftSection={<IconShoppingCart size={18} />}
                 mt="md"
+                radius="md"
               >
                 Add to cart
               </Button>
