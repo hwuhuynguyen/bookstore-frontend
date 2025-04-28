@@ -13,7 +13,7 @@ import {
 } from "@tabler/icons-react";
 import { Link, useLocation } from "react-router-dom";
 
-function ClientUserNavbar() {
+function UserNavbar() {
   const location = useLocation();
 
   const navButton = (
@@ -64,4 +64,4 @@ function ClientUserNavbar() {
   );
 }
 
-export default ClientUserNavbar;
+export default UserNavbar;
