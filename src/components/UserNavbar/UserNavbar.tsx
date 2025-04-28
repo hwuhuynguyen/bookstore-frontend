@@ -57,7 +57,7 @@ function UserNavbar() {
       {navButton("Order Management", "/order", IconFileBarcode, [
         "/order/detail",
       ])}
-      {navButton("Product Reviews", "/user/review", IconStar)}
+      {navButton("Reviews", "/user/review", IconStar)}
       {navButton("Wishlist", "/user/wishlist", IconHeart)}
       {navButton("Consultation Requests", "/user/chat", IconMessageCircle)}
     </Stack>
