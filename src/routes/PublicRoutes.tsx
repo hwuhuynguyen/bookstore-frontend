@@ -10,6 +10,7 @@ import ClientUserPage from "../pages/ClientUserPage";
 import ErrorPage from "../pages/ErrorPage";
 import ClientOrderPage from "../pages/ClientOrderPage";
 import ClientOrderDetailPage from "../pages/ClientOrderDetailPage";
+import ClientWishlistPage from "../pages/ClientWishlistPage";
 
 export const publicRoutes: RouteObject[] = [
     {
@@ -58,17 +59,13 @@ export const publicRoutes: RouteObject[] = [
           path: "user/setting",
           element: <ClientSettingPage />,
         },
+        {
+          path: "user/wishlist",
+          element: <ClientWishlistPage />,
+        },
         // {
         //   path: "register",
         //   element: <RegisterPage />,
-        // },
-        // {
-        //   path: "profile",
-        //   element: <ProfilePage />,
-        // },
-        // {
-        //   path: "orders",
-        //   element: <OrdersPage />,
         // },
         {
           path: "*",
