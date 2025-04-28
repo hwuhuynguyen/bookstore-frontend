@@ -8,6 +8,7 @@ import ClientShoppingCart from "../pages/ClientShoppingCart";
 import ClientSettingPage from "../pages/ClientSettingPage";
 import ClientUserPage from "../pages/ClientUserPage";
 import ErrorPage from "../pages/ErrorPage";
+import ClientOrderPage from "../pages/ClientOrderPage";
 
 export const publicRoutes: RouteObject[] = [
     {
@@ -39,6 +40,10 @@ export const publicRoutes: RouteObject[] = [
         {
           path: "cart",
           element: <ClientShoppingCart />,
+        },
+        {
+          path: "order",
+          element: <ClientOrderPage />,
         },
         {
           path: "user",

@@ -17,7 +17,7 @@ import {
   IconPhone,
   IconVenus,
 } from "@tabler/icons-react";
-import ClientUserNavbar from "../../components/ClientUserNavbar";
+import UserNavbar from "../../components/UserNavbar";
 import useAuthStore from "../../stores/AuthStore";
 
 function ClientUserPage() {
@@ -39,7 +39,7 @@ function ClientUserPage() {
       <Container size="xl">
         <Grid gutter="lg">
           <Grid.Col span={{ base: 2, sm: 1, md: 3 }}>
-            <ClientUserNavbar />
+            <UserNavbar />
           </Grid.Col>
 
           <Grid.Col span={{ base: 10, sm: 11, md: 9 }}>
