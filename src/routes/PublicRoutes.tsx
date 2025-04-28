@@ -5,6 +5,9 @@ import LoginPage from "../pages/Login";
 import ClientSearchBookPage from "../pages/ClientSearchBookPage";
 import ClientBookDetailPage from "../pages/ClientBookDetailPage";
 import ClientShoppingCart from "../pages/ClientShoppingCart";
+import ClientSettingPage from "../pages/ClientSettingPage";
+import ClientUserPage from "../pages/ClientUserPage";
+import ErrorPage from "../pages/ErrorPage";
 
 export const publicRoutes: RouteObject[] = [
     {
@@ -31,9 +34,19 @@ export const publicRoutes: RouteObject[] = [
           path: "login",
           element: <LoginPage />,
         },
+
+        // --- FOR AUTHENTICATED USERS ---
         {
           path: "cart",
           element: <ClientShoppingCart />,
+        },
+        {
+          path: "user",
+          element: <ClientUserPage />,
+        },
+        {
+          path: "user/setting",
+          element: <ClientSettingPage />,
         },
         // {
         //   path: "register",
@@ -47,10 +60,10 @@ export const publicRoutes: RouteObject[] = [
         //   path: "orders",
         //   element: <OrdersPage />,
         // },
-        // {
-        //   path: "*",
-        //   element: <NotFoundPage />,
-        // }
+        {
+          path: "*",
+          element: <ErrorPage />,
+        }
       ],
     },
   ];
