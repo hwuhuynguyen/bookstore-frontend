@@ -9,6 +9,7 @@ import ClientSettingPage from "../pages/ClientSettingPage";
 import ClientUserPage from "../pages/ClientUserPage";
 import ErrorPage from "../pages/ErrorPage";
 import ClientOrderPage from "../pages/ClientOrderPage";
+import ClientOrderDetailPage from "../pages/ClientOrderDetailPage";
 
 export const publicRoutes: RouteObject[] = [
     {
@@ -44,6 +45,10 @@ export const publicRoutes: RouteObject[] = [
         {
           path: "order",
           element: <ClientOrderPage />,
+        },
+        {
+          path: "order/detail/:orderId",
+          element: <ClientOrderDetailPage />,
         },
         {
           path: "user",
