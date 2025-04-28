@@ -12,15 +12,15 @@ const RequireAuth = ({ children }: RequireAuthProps) => {
   const location = useLocation();
   // Replace this with your actual authentication check
   
-  // if (!accessToken) {
-  //   // Redirect to login page if not authenticated
-  //   return <Navigate to="/login" state={{ from: location }} replace />;
-  // }
+  if (!accessToken) {
+    // Redirect to login page if not authenticated
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
-  // if (role !== "ADMIN") {
-  //   // Redirect to home page if authenticated but not admin
-  //   return <Navigate to="/" replace />;
-  // }
+  if (role !== "ADMIN") {
+    // Redirect to home page if authenticated but not admin
+    return <Navigate to="/" replace />;
+  }
 
   return <>{children}</>;
 };

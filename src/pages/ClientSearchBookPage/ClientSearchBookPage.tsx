@@ -1,7 +1,6 @@
 import {
   Button,
   Checkbox,
-  Chip,
   Container,
   Grid,
   Group,

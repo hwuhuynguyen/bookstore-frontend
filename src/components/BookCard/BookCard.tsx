@@ -8,6 +8,7 @@ import {
   Text,
 } from "@mantine/core";
 import { IconShoppingCart } from "@tabler/icons-react";
+import { Link } from "react-router-dom";
 
 function BookCard() {
   const book = {
@@ -39,9 +40,11 @@ function BookCard() {
 
         <Grid>
           <Grid.Col span={{base: 9}}>
+            <Link to={`/books/${book.id}`} style={{ textDecoration: "none" }}>
             <Button color="blue" fullWidth mt="sm" radius="md">
               View details
             </Button>
+            </Link>
           </Grid.Col>
           <Grid.Col span={{base: 3}}>
             <Button color="cyan" fullWidth mt="sm" radius="md">
