@@ -1,32 +1,31 @@
 import { Card, Container, Grid, Group, Pagination, Skeleton, Stack, Text, Title, useMantineTheme } from "@mantine/core";
 import UserNavbar from "../../components/UserNavbar";
 import { useState } from "react";
-import WishCard from "../../components/WishCard";
+import NotificationCard from "../../components/NotificationCard";
 
-function ClientWishlist() {
+function ClientNotificationPage() {
   const theme = useMantineTheme()
   const [isLoading, setIsLoading] = useState(false);
   const [activePage, setActivePage]= useState(0)
-  const wishes: any = [{}, {}, {}]
-  let wishlistContentFragment;
+  const notifications: any = [{}, {}, {}]
+  let notificationContentFragment;
 
   if (isLoading) {
-    wishlistContentFragment = (
+    notificationContentFragment = (
       <Stack>
-        {Array(5)
-          .fill(0)
-          .map((_, index) => (
-            <Skeleton key={index} height={50} radius="md" />
-          ))}
+        {Array(5).fill(0).map((_, index) => (
+          <Skeleton key={index} height={50} radius="md"/>
+        ))}
       </Stack>
     );
   }
 
-  if (wishes && wishes.length > 0) {
-    wishlistContentFragment = (
+  if (notifications && notifications.length > 0) {
+    notificationContentFragment = (
       <>
-        <Stack>
-          {wishes.map((wish: any) => <WishCard key={wish.id} wish={wish}/>)}
+        <Stack gap="xs">
+          {notifications
+            .map((notification: any) => <NotificationCard key={notification.id} notification={notification}/>)}
         </Stack>
 
         <Group justify="space-between" mt={theme.spacing.lg}>
@@ -54,9 +53,9 @@ function ClientWishlist() {
           <Grid.Col span={{ base: 10, sm: 11, md: 9 }}>
             <Card radius="md" shadow="sm" p="lg">
               <Stack>
-                <Title order={2}>Wishlist</Title>
+                <Title order={2}>Notifications</Title>
 
-                {wishlistContentFragment}
+                {notificationContentFragment}
               </Stack>
             </Card>
           </Grid.Col>
@@ -66,4 +65,4 @@ function ClientWishlist() {
   );
 }
 
-export default ClientWishlist;
+export default ClientNotificationPage;
