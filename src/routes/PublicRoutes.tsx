@@ -12,6 +12,7 @@ import ClientOrderPage from "../pages/ClientOrderPage";
 import ClientOrderDetailPage from "../pages/ClientOrderDetailPage";
 import ClientWishlistPage from "../pages/ClientWishlistPage";
 import ClientNotificationPage from "../pages/ClientNotificationPage";
+import ClientReviewPage from "../pages/ClientReviewPage";
 
 export const publicRoutes: RouteObject[] = [
     {
@@ -63,6 +64,10 @@ export const publicRoutes: RouteObject[] = [
         {
           path: "user/notification",
           element: <ClientNotificationPage />,
+        },
+        {
+          path: "user/review",
+          element: <ClientReviewPage />,
         },
         {
           path: "user/wishlist",
