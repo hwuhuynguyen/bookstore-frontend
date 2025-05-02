@@ -14,7 +14,6 @@ import {
   ActionIcon,
   Container,
   Paper,
-  rem,
   Stack,
   useMantineTheme,
   Progress,
@@ -96,7 +95,7 @@ export default function ClientBookDetailPage() {
                 fit="contain"
               />
               <Button fullWidth variant="outline" color="gray" mt="md">
-                Xem trước
+                Preview
               </Button>
             </Box>
           </Grid.Col>
