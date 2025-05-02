@@ -1,6 +1,8 @@
-import { AppShell, Button, Text, Burger, Group } from '@mantine/core';
+import { Container, Grid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import { AdminHeader } from "../../components/Header";
+import AdminNavbar from "../../components/AdminNavbar";
 
 function AdminLayout() {
   const [opened, { toggle }] = useDisclosure();
@@ -9,45 +11,26 @@ function AdminLayout() {
   const handleLogout = () => {
     // Handle logout logic here (clear tokens, user data, etc.)
     // Then redirect to login page
-    navigate('/login');
+    navigate("/login");
   };
   return (
-    <AppShell
-      header={{ height: 60 }}
-      navbar={{
-        width: 300,
-        breakpoint: "sm",
-        collapsed: { mobile: !opened },
-      }}
-      padding="md"
-    >
-      <AppShell.Header>
-        <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-        <Group justify="space-between">
-            <Text size="xl" fw={700}>Bookstore Admin Panel</Text>
-            <Group>
-              <Text>Admin User</Text>
-            </Group>
-          </Group>
-      </AppShell.Header>
+    <div>
+      <AdminHeader />
+      <main>
+        <Container size="xl">
+          <Grid gutter="lg">
+            <Grid.Col span={{ base: 2, sm: 1, md: 3 }}>
+              <AdminNavbar />
+            </Grid.Col>
 
-      <AppShell.Navbar p="md">
-            <Text size="lg" fw={700} mb="lg">Bookstore Admin</Text>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <Button variant="subtle" component={Link} to="/admin/dashboard">Dashboard</Button>
-              <Button variant="subtle" component={Link} to="/admin/books">Manage Books</Button>
-              <Button variant="subtle" component={Link} to="/admin/categories">Categories</Button>
-              <Button variant="subtle" component={Link} to="/admin/orders">Orders</Button>
-              <Button variant="subtle" component={Link} to="/admin/users">Users</Button>
-            </div>
-            <Button fullWidth onClick={handleLogout} color="red">Logout</Button>
-      </AppShell.Navbar>
-
-      <AppShell.Main>
-        <Outlet />
-      </AppShell.Main>
-    </AppShell>
-  )
+            <Grid.Col span={{ base: 10, sm: 11, md: 9 }}>
+              <Outlet />
+            </Grid.Col>
+          </Grid>
+        </Container>
+      </main>
+    </div>
+  );
 }
 
 export default AdminLayout;

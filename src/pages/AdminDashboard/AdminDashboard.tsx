@@ -1,123 +1,255 @@
-import { Container, Title, Grid, Card, Text, Group, RingProgress } from '@mantine/core';
+import {
+  Container,
+  Title,
+  Grid,
+  Card,
+  Text,
+  Group,
+  Paper,
+  Stack,
+  useMantineTheme,
+} from "@mantine/core";
+import OverviewCard from "../../components/OverviewCard";
+import {
+  IconBox,
+  IconBuildingWarehouse,
+  IconFileBarcode,
+  IconStar,
+  IconUsers,
+} from "@tabler/icons-react";
+import {
+  Bar,
+  BarChart,
+  Line,
+  LineChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+
+const dateReducerForStatisticResources = (statisticResources: any[]) =>
+  statisticResources.map((statisticResource) => ({
+    date: statisticResource.date,
+    total: statisticResource.value,
+  }));
 
 const AdminDashboard = () => {
-  // Mock dashboard data
-  const stats = {
-    totalSales: 12450.79,
-    ordersToday: 24,
-    totalBooks: 542,
-    lowStock: 15,
-    pendingOrders: 18,
-    newCustomers: 8
+  const theme = useMantineTheme();
+
+  const statistic = {
+    totalCustomer: 1200,
+    totalProduct: 450,
+    totalOrder: 320,
+    totalWaybill: 300,
+    totalReview: 150,
+    totalActivePromotion: 5,
+    totalSupplier: 20,
+    totalBrand: 12,
+    statisticRegistration: [
+      { date: "2025-04-01", value: 10 },
+      { date: "2025-04-02", value: 15 },
+      { date: "2025-04-03", value: 20 },
+    ],
+    statisticOrder: [
+      { date: "2025-04-01", value: 25 },
+      { date: "2025-04-02", value: 30 },
+      { date: "2025-04-03", value: 35 },
+    ],
+    statisticReview: [
+      { date: "2025-04-01", value: 5 },
+      { date: "2025-04-02", value: 8 },
+      { date: "2025-04-03", value: 6 },
+      { date: "2025-04-03", value: 6 },
+      { date: "2025-04-03", value: 6 },
+      { date: "2025-04-03", value: 6 },
+      { date: "2025-04-03", value: 6 },
+      { date: "2025-04-03", value: 6 },
+      { date: "2025-04-03", value: 6 },
+    ],
+    statisticWaybill: [
+      { date: "2025-04-01", value: 22 },
+      { date: "2025-04-02", value: 28 },
+      { date: "2025-04-03", value: 26 },
+    ],
   };
-  
+
   return (
     <Container size="xl">
-      <Title order={1} my="lg">Dashboard</Title>
-      
-      <Grid>
-        <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Group>
-              <div>
-                <Text c="dimmed" size="sm">Total Sales</Text>
-                <Text size="xl" fw={700}>${stats.totalSales.toFixed(2)}</Text>
-              </div>
-              <RingProgress
-                sections={[{ value: 65, color: 'blue' }]}
-                size={80}
-                thickness={8}
-                label={<Text size="xs" ta="center">+5.2%</Text>}
-              />
-            </Group>
-          </Card>
-        </Grid.Col>
-        
-        <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Group>
-              <div>
-                <Text c="dimmed" size="sm">Orders Today</Text>
-                <Text size="xl" fw={700}>{stats.ordersToday}</Text>
-              </div>
-              <RingProgress
-                sections={[{ value: 40, color: 'green' }]}
-                size={80}
-                thickness={8}
-                label={<Text size="xs" ta="center">+2.4%</Text>}
-              />
-            </Group>
-          </Card>
-        </Grid.Col>
-        
-        <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Group>
-              <div>
-                <Text c="dimmed" size="sm">Total Books</Text>
-                <Text size="xl" fw={700}>{stats.totalBooks}</Text>
-              </div>
-              <RingProgress
-                sections={[{ value: 75, color: 'cyan' }]}
-                size={80}
-                thickness={8}
-                label={<Text size="xs" ta="center">+12</Text>}
-              />
-            </Group>
-          </Card>
-        </Grid.Col>
-        
-        <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Group>
-              <div>
-                <Text c="dimmed" size="sm">Low Stock Items</Text>
-                <Text size="xl" fw={700}>{stats.lowStock}</Text>
-              </div>
-              <RingProgress
-                sections={[{ value: 15, color: 'red' }]}
-                size={80}
-                thickness={8}
-                label={<Text size="xs" ta="center">-2</Text>}
-              />
-            </Group>
-          </Card>
-        </Grid.Col>
-        
-        <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Group>
-              <div>
-                <Text c="dimmed" size="sm">Pending Orders</Text>
-                <Text size="xl" fw={700}>{stats.pendingOrders}</Text>
-              </div>
-              <RingProgress
-                sections={[{ value: 30, color: 'orange' }]}
-                size={80}
-                thickness={8}
-                label={<Text size="xs" ta="center">+5</Text>}
-              />
-            </Group>
-          </Card>
-        </Grid.Col>
-        
-        <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Group>
-              <div>
-                <Text c="dimmed" size="sm">New Customers</Text>
-                <Text size="xl" fw={700}>{stats.newCustomers}</Text>
-              </div>
-              <RingProgress
-                sections={[{ value: 20, color: 'teal' }]}
-                size={80}
-                thickness={8}
-                label={<Text size="xs" ta="center">+3</Text>}
-              />
-            </Group>
-          </Card>
-        </Grid.Col>
-      </Grid>
+      <Stack>
+        <Card radius="md" shadow="lg" p="lg" mb="md" withBorder>
+          <Title order={2}>Dashboard</Title>
+        </Card>
+
+        <Paper shadow="xs" p="md">
+          <Stack>
+            <Text size="lg" fw={500} color="dimmed">
+              Overview
+            </Text>
+            <Grid>
+              <Grid.Col span={3}>
+                <OverviewCard
+                  title="Total users"
+                  number={statistic.totalCustomer}
+                  color="blue"
+                  icon={IconUsers}
+                />
+              </Grid.Col>
+              <Grid.Col span={3}>
+                <OverviewCard
+                  title="Total books"
+                  number={statistic.totalProduct}
+                  color="orange"
+                  icon={IconBox}
+                />
+              </Grid.Col>
+              <Grid.Col span={3}>
+                <OverviewCard
+                  title="Total orders"
+                  number={statistic.totalOrder}
+                  color="teal"
+                  icon={IconFileBarcode}
+                />
+              </Grid.Col>
+              <Grid.Col span={3}>
+                <OverviewCard
+                  title="Total reviews"
+                  number={statistic.totalReview}
+                  color="yellow"
+                  icon={IconStar}
+                />
+              </Grid.Col>
+              <Grid.Col span={3}>
+                <OverviewCard
+                  title="Total publishers"
+                  number={statistic.totalSupplier}
+                  color="violet"
+                  icon={IconBuildingWarehouse}
+                />
+              </Grid.Col>
+              <Grid.Col span={3}>
+                <OverviewCard
+                  title="Total authors"
+                  number={statistic.totalSupplier}
+                  color="grape"
+                  icon={IconBuildingWarehouse}
+                />
+              </Grid.Col>
+              <Grid.Col span={3}>
+                <OverviewCard
+                  title="Total categories"
+                  number={statistic.totalSupplier}
+                  color="indigo"
+                  icon={IconBuildingWarehouse}
+                />
+              </Grid.Col>
+            </Grid>
+          </Stack>
+        </Paper>
+
+        <Grid>
+          <Grid.Col span={6}>
+            <Stack>
+              <Paper shadow="xs" p="md">
+                <Stack>
+                  <Group justify="space-between">
+                    <Text size="lg" fw={500} color="dimmed">
+                      Account registrations
+                    </Text>
+                    <Text size="sm" color="dimmed">
+                      last 7 days
+                    </Text>
+                  </Group>
+
+                  <LineChart
+                    width={400}
+                    height={275}
+                    data={dateReducerForStatisticResources(
+                      statistic.statisticRegistration
+                    )}
+                    margin={{ top: 10, right: 5, bottom: 0, left: -10 }}
+                  >
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line
+                      name="Number of registrations"
+                      type="monotone"
+                      dataKey="total"
+                      stroke={theme.colors.blue[5]}
+                    />
+                  </LineChart>
+                </Stack>
+              </Paper>
+
+              <Paper shadow="xs" p="md">
+                <Stack>
+                  <Group justify="space-between">
+                    <Text size="lg" fw={500} color="dimmed">
+                      Book reviews
+                    </Text>
+                    <Text size="sm" color="dimmed">
+                      last 7 days
+                    </Text>
+                  </Group>
+
+                  <LineChart
+                    width={400}
+                    height={275}
+                    data={dateReducerForStatisticResources(
+                      statistic.statisticReview
+                    )}
+                    margin={{ top: 10, right: 5, bottom: 0, left: -10 }}
+                  >
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line
+                      name="Number of reviews"
+                      type="monotone"
+                      dataKey="total"
+                      stroke={theme.colors.yellow[7]}
+                    />
+                  </LineChart>
+                </Stack>
+              </Paper>
+            </Stack>
+          </Grid.Col>
+          <Grid.Col span={6}>
+            <Stack>
+              <Paper shadow="xs" p="md">
+                <Stack>
+                  <Group justify="space-between">
+                    <Text size="lg" fw={500} color="dimmed">
+                      Book orders
+                    </Text>
+                    <Text size="sm" color="dimmed">
+                      last 7 days
+                    </Text>
+                  </Group>
+
+                  <BarChart
+                    width={400}
+                    height={275}
+                    data={dateReducerForStatisticResources(
+                      statistic.statisticOrder
+                    )}
+                    margin={{ top: 10, right: 5, bottom: 0, left: -10 }}
+                  >
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar
+                      name="Number of orders"
+                      dataKey="total"
+                      fill={theme.colors.teal[5]}
+                    />
+                  </BarChart>
+                </Stack>
+              </Paper>
+            </Stack>
+          </Grid.Col>
+        </Grid>
+      </Stack>
     </Container>
   );
 };

@@ -1,7 +1,6 @@
-import { AppShell, Group, Button, Text, Drawer, Burger } from "@mantine/core";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import DefaultHeader from "../../components/Header";
+import {DefaultHeader} from "../../components/Header";
 import DefaultFooter from "../../components/Footer/DefaultFooter";
 
 const PublicLayout = () => {
