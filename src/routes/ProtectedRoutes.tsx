@@ -6,6 +6,7 @@ import AdminBookPage from "../pages/AdminBookPage";
 import AdminCategoryPage from "../pages/AdminCategoryPage";
 import AdminOrderPage from "../pages/AdminOrderPage";
 import AdminUserPage from "../pages/AdminUserPage";
+import AdminAuthorPage from "../pages/AdminAuthorPage";
 
 export const protectedRoutes: RouteObject[] = [
   {
@@ -23,6 +24,10 @@ export const protectedRoutes: RouteObject[] = [
       {
         path: "dashboard",
         element: <AdminDashboard />,
+      },
+      {
+        path: "authors",
+        element: <AdminAuthorPage />,
       },
       {
         path: "books",
