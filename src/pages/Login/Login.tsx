@@ -139,7 +139,7 @@ function LoginPage() {
 							required
 							radius="md"
 							label="Username"
-							placeholder="Enter username"
+							placeholder="Enter your username"
 							size="md"
 							disabled={!!user}
 							classNames={{
@@ -151,7 +151,7 @@ function LoginPage() {
 							required
 							label="Password"
 							radius="md"
-							placeholder="Enter password"
+							placeholder="Enter your password"
 							mt="md"
 							size="md"
 							disabled={!!user}
@@ -179,7 +179,7 @@ function LoginPage() {
 
 					<Text mt="md" style={{ textAlign: "center" }}>
 						Don't have account?{" "}
-						<Anchor component={Link} to="/signup">
+						<Anchor component={Link} to="/register">
 							Sign up now
 						</Anchor>
 					</Text>
