@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import instance from "../config/axios";
+import { UserResponse } from "../models/User";
+import { JwtResponse } from "../models/Authentication";
 
 /**
  * Interface defining the structure of the authentication state
@@ -8,20 +9,16 @@ import instance from "../config/axios";
 interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
-  user: any | null;
-  role: string;
-  isLoading: boolean;
-  error: string | null;
-  isLogin: boolean;
+  user: UserResponse | null;
 }
 
 /**
  * Interface defining the actions for the authentication store
  */
 interface AuthActions {
-  login: (accessToken: string, refreshToken: string) => void;
-  logout: () => void;
-  clearError: () => void;
+  updateJwtToken: (jwtResponse: JwtResponse) => void;
+  updateUser: (value: UserResponse) => void;
+  resetAuthState: () => void;
 }
 
 /**
@@ -40,38 +37,21 @@ const useAuthStore = create<AuthStore>()(
       accessToken: null,
       refreshToken: null,
       user: null,
-      role: "GUEST",
-      isLoading: false,
-      error: null,
-      isLogin: false,
 
-      login: (accessToken: string, refreshToken: string) => {
-        // Update state
+      updateJwtToken: (jwtResponse: JwtResponse) => {
         set({
-          accessToken,
-          refreshToken,
-          isLoading: false,
-          error: null,
-          isLogin: true,
+          accessToken: jwtResponse.accessToken,
+          refreshToken: jwtResponse.refreshToken,
         });
       },
+      updateUser: (value) => set(() => ({ user: value })),
 
-      logout: () => {
-        delete instance.defaults.headers.common["Authorization"];
-
-        set({
+      resetAuthState: () => {
+        set(() => ({
           accessToken: null,
           refreshToken: null,
           user: null,
-          role: "GUEST",
-          isLoading: false,
-          error: null,
-          isLogin: false,
-        });
-      },
-
-      clearError: () => {
-        set({ error: null });
+        }));
       },
     }),
     {
@@ -80,7 +60,6 @@ const useAuthStore = create<AuthStore>()(
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         user: state.user,
-        isLogin: state.isLogin,
       }),
     }
   )

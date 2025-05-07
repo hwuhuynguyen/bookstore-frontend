@@ -16,14 +16,12 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../../stores/AuthStore";
 import { useForm } from "@mantine/form";
-import classes from "./Register.module.css";
 import { useState } from "react";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
 
 function RegisterPage() {
   const matches = useMediaQuery("(min-width: 992px)");
-  // useTitle();
 
   const { user } = useAuthStore();
   const navigate = useNavigate();
@@ -112,7 +110,7 @@ function RegisterPage() {
   // });
 
   return (
-    <Container className={classes.container}>
+    <Container>
       <Transition
         mounted={openedAlert}
         transition="fade"
@@ -136,7 +134,6 @@ function RegisterPage() {
       <Grid justify="center" align="center">
         <Grid.Col span={{ base: 8, md: 5 }}>
           <Card
-            className={classes.form}
             radius={"md"}
             p={30}
             shadow={matches ? "0" : "md"}

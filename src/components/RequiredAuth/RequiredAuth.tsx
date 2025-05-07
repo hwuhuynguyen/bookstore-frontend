@@ -8,14 +8,14 @@ interface RequireAuthProps {
 }
 
 const RequireAuth = ({ children }: RequireAuthProps) => {
-  const { accessToken, role } = useAuthStore();
+  const { accessToken } = useAuthStore();
   const location = useLocation();
   // Replace this with your actual authentication check
   
-  // if (!accessToken) {
-  //   // Redirect to login page if not authenticated
-  //   return <Navigate to="/login" state={{ from: location }} replace />;
-  // }
+  if (!accessToken) {
+    // Redirect to login page if not authenticated
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
   // if (role !== "ADMIN") {
   //   // Redirect to home page if authenticated but not admin
