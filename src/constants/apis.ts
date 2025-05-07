@@ -6,6 +6,7 @@ const apiPath = ApplicationConstants.API_PATH;
 
 class ResourceURL {
   static LOGIN = apiPath + '/auth/login';
+  static REGISTER = apiPath + '/auth/register';
   static REGENERATE_TOKEN = apiPath + '/auth/regenerate-token';
 
   static CLIENT_USER_INFO = apiPath + '/users/personal-info';

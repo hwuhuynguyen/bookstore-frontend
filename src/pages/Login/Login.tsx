@@ -101,28 +101,20 @@ function LoginPage() {
 
           <form onSubmit={handleFormSubmit}>
             <TextInput
-              required
               radius="md"
               label="Username"
               placeholder="Enter your username"
               size="md"
               disabled={!!user}
-              classNames={{
-                root: classes["input-root"],
-              }}
               {...form.getInputProps("username")}
             />
             <PasswordInput
-              required
               label="Password"
               radius="md"
               placeholder="Enter your password"
               mt="md"
               size="md"
               disabled={!!user}
-              classNames={{
-                root: classes["input-root"],
-              }}
               {...form.getInputProps("password")}
             />
             <Box mt={10}>
