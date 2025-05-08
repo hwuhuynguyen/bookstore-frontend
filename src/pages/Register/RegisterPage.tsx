@@ -36,6 +36,7 @@ function RegisterPage() {
       firstName: "",
       lastName: "",
     },
+    validateInputOnBlur: true,
     validate: {
       username: (value) =>
         value.trim().length == 0 ? "Username is required" : null,

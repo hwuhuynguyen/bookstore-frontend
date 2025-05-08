@@ -68,8 +68,8 @@ function DefaultHeader() {
 
   const handleSignoutMenu = () => {
     if (user) {
-        resetAuthState();
-        NotifyUtils.simpleSuccess('Logout successfully!');
+      resetAuthState();
+      NotifyUtils.simpleSuccess("Logout successfully!");
     }
   };
 

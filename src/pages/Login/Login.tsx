@@ -27,7 +27,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [redirectPath] = useState(
-    location.state?.historyLocation.pathname || HOMEPAGE
+    location.state?.historyLocation?.pathname || HOMEPAGE
   );
 
   const form = useForm({

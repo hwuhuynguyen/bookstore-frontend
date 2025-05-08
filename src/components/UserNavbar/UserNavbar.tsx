@@ -1,8 +1,6 @@
 import { Button, Stack } from "@mantine/core";
 import {
   Icon,
-  IconAlarm,
-  IconAward,
   IconBell,
   IconFileBarcode,
   IconHeart,

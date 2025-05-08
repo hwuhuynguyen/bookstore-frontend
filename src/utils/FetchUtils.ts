@@ -97,7 +97,7 @@ class FetchUtils {
    */
   static async getWithToken<O>(resourceUrl: string, requestParams?: BasicRequestParams, isAdmin?: boolean): Promise<O> {
     const token = JSON.parse(localStorage
-      .getItem(isAdmin ? 'auth-storage' : 'auth-storage') || '{}').state?.accessToken;
+      .getItem(isAdmin ? 'admin-auth-storage' : 'auth-storage') || '{}').state?.accessToken;
 
     // Source: https://stackoverflow.com/a/70426220
     const response = await fetch(FetchUtils.concatParams(resourceUrl, requestParams), {
@@ -122,7 +122,7 @@ class FetchUtils {
    */
   static async postWithToken<I, O>(resourceUrl: string, requestBody: I, isAdmin?: boolean): Promise<O> {
     const token = JSON.parse(localStorage
-      .getItem(isAdmin ? 'auth-storage' : 'auth-storage') || '{}').state?.accessToken;
+      .getItem(isAdmin ? 'admin-auth-storage' : 'auth-storage') || '{}').state?.accessToken;
 
     const response = await fetch(resourceUrl, {
       method: 'POST',
@@ -148,7 +148,7 @@ class FetchUtils {
    */
   static async putWithToken<I, O>(resourceUrl: string, requestBody: I, isAdmin?: boolean): Promise<O> {
     const token = JSON.parse(localStorage
-      .getItem(isAdmin ? 'auth-storage' : 'auth-storage') || '{}').state?.accessToken;
+      .getItem(isAdmin ? 'admin-auth-storage' : 'auth-storage') || '{}').state?.accessToken;
 
     const response = await fetch(resourceUrl, {
       method: 'PUT',
@@ -174,7 +174,7 @@ class FetchUtils {
    */
   static async deleteWithToken<T>(resourceUrl: string, entityIds: T[], isAdmin?: boolean) {
     const token = JSON.parse(localStorage
-      .getItem(isAdmin ? 'auth-storage' : 'auth-storage') || '{}').state?.accessToken;
+      .getItem(isAdmin ? 'admin-auth-storage' : 'auth-storage') || '{}').state?.accessToken;
 
     const response = await fetch(resourceUrl, {
       method: 'DELETE',

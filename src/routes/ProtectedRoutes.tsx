@@ -1,7 +1,6 @@
 import { Navigate, RouteObject } from "react-router-dom";
 import AdminLayout from "../layouts/AdminLayout/AdminLayout";
 import AdminDashboard from "../pages/AdminDashboard";
-import RequireAuth from "../components/RequiredAuth";
 import AdminBookPage from "../pages/AdminBookPage";
 import AdminCategoryPage from "../pages/AdminCategoryPage";
 import AdminOrderPage from "../pages/AdminOrderPage";
@@ -11,11 +10,7 @@ import AdminAuthorPage from "../pages/AdminAuthorPage";
 export const protectedRoutes: RouteObject[] = [
   {
     path: "/admin",
-    element: (
-      <RequireAuth>
-        <AdminLayout />
-      </RequireAuth>
-    ),
+    element: <AdminLayout />,
     children: [
       {
         index: true,

@@ -7,8 +7,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { useElementSize } from "@mantine/hooks";
-import useAuthStore from "../../stores/AuthStore";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   IconFingerprint,
   IconLogin,
@@ -19,6 +18,8 @@ import {
 } from "@tabler/icons-react";
 import classes from "./DefaultHeader.module.css";
 import AppLogo from "../AppLogo";
+import useAdminAuthStore from "../../stores/AdminAuthStore";
+import NotifyUtils from "../../utils/NotifyUtils";
 
 function AdminHeader() {
   const theme = useMantineTheme();
@@ -26,14 +27,12 @@ function AdminHeader() {
 
   const { ref: refHeaderStack } = useElementSize();
 
-  const { user } = useAuthStore();
-
-  const navigate = useNavigate();
+  const { user, resetAuthState } = useAdminAuthStore();
 
   const handleSignoutMenu = () => {
     if (user) {
-      //   resetAuthState();
-      //   NotifyUtils.simpleSuccess('Đăng xuất thành công');
+      resetAuthState();
+      NotifyUtils.simpleSuccess("Logout successfully!");
     }
   };
 
