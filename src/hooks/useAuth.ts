@@ -6,21 +6,14 @@ import { HOMEPAGE, LOGIN_PATH } from "../constants";
 import useAuthStore from "../stores/AuthStore";
 import instance from "../config/axios";
 import { isEmpty } from "lodash";
-
-/**
- * Interface for login data
- */
-interface LoginData {
-  username: string;
-  password: string;
-}
+import { LoginRequest } from "../models/Authentication";
 
 /**
  * Custom hook for authentication operations
  * Integrates with AuthStore and uses React Query for API calls
  */
 function useAuth() {
-  const { login, user: userProfile } = useAuthStore();
+  const { updateJwtToken, user: userProfile } = useAuthStore();
   const isAuthenticated = !isEmpty(userProfile);
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,7 +26,7 @@ function useAuth() {
    */
   const handleLogin = useMutation({
     mutationKey: ["login"],
-    mutationFn: (data: LoginData) => {
+    mutationFn: (data: LoginRequest) => {
       return instance.post(LOGIN_PATH, data);
     },
   });
@@ -44,14 +37,14 @@ function useAuth() {
    * @param onError Callback function for handling errors
    */
   const onSubmitAccountForm = (
-    data: LoginData,
+    data: LoginRequest,
     onError: (error: any) => void
   ) => {
     // Get the intended destination from location state or default to home
     handleLogin.mutate(data, {
       onSuccess: (response) => {
         console.log("Login success:", response.data);
-        login(response.data.accessToken, response.data.refreshToken);
+        updateJwtToken(response.data);
         // Navigate to the original intended destination
         navigate(redirectPath, { replace: true });
       },

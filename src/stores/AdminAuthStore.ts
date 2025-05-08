@@ -6,7 +6,7 @@ import { JwtResponse } from "../models/Authentication";
 /**
  * Interface defining the structure of the authentication state
  */
-interface AuthState {
+interface AdminAuthState {
   accessToken: string | null;
   refreshToken: string | null;
   user: UserResponse | null;
@@ -15,7 +15,7 @@ interface AuthState {
 /**
  * Interface defining the actions for the authentication store
  */
-interface AuthActions {
+interface AdminAuthActions {
   updateJwtToken: (jwtResponse: JwtResponse) => void;
   updateUser: (value: UserResponse) => void;
   resetAuthState: () => void;
@@ -24,14 +24,14 @@ interface AuthActions {
 /**
  * Combined type for the complete auth store
  */
-type AuthStore = AuthState & AuthActions;
+type AdminAuthStore = AdminAuthState & AdminAuthActions;
 
 /**
  * Auth Store created with Zustand
  * Handles authentication state and provides actions for login, logout, and profile updates
  * Persists auth state to localStorage
  */
-const useAuthStore = create<AuthStore>()(
+const useAdminAuthStore = create<AdminAuthStore>()(
   persist(
     (set) => ({
       accessToken: null,
@@ -55,7 +55,7 @@ const useAuthStore = create<AuthStore>()(
       },
     }),
     {
-      name: "auth-storage", // name of localStorage key
+      name: "admin-auth-storage", // name of localStorage key
       partialize: (state) => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
@@ -65,4 +65,4 @@ const useAuthStore = create<AuthStore>()(
   )
 );
 
-export default useAuthStore;
+export default useAdminAuthStore;

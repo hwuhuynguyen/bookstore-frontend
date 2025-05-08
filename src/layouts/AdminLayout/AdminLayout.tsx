@@ -1,18 +1,17 @@
 import { Container, Grid } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { AdminHeader } from "../../components/Header";
 import AdminNavbar from "../../components/AdminNavbar";
+import useAdminAuthStore from "../../stores/AdminAuthStore";
+import AdminLoginPage from "../../pages/AdminLoginPage";
 
 function AdminLayout() {
-  const [opened, { toggle }] = useDisclosure();
-  const navigate = useNavigate();
+  const { user } = useAdminAuthStore();
 
-  const handleLogout = () => {
-    // Handle logout logic here (clear tokens, user data, etc.)
-    // Then redirect to login page
-    navigate("/login");
-  };
+  if (!user) {
+    return <AdminLoginPage />;
+  }
+
   return (
     <div>
       <AdminHeader />

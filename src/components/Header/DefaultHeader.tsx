@@ -33,6 +33,7 @@ import {
 } from "@tabler/icons-react";
 import classes from "./DefaultHeader.module.css";
 import AppLogo from "../AppLogo";
+import NotifyUtils from "../../utils/NotifyUtils";
 
 function DefaultHeader() {
   const theme = useMantineTheme();
@@ -40,7 +41,7 @@ function DefaultHeader() {
 
   const { ref: refHeaderStack } = useElementSize();
 
-  const { user } = useAuthStore();
+  const { user, resetAuthState } = useAuthStore();
 
   // Search state & function
   const navigate = useNavigate();
@@ -67,8 +68,8 @@ function DefaultHeader() {
 
   const handleSignoutMenu = () => {
     if (user) {
-      //   resetAuthState();
-      //   NotifyUtils.simpleSuccess('Đăng xuất thành công');
+      resetAuthState();
+      NotifyUtils.simpleSuccess("Logout successfully!");
     }
   };
 
@@ -108,7 +109,7 @@ function DefaultHeader() {
           onKeyDown={handleSearchInput}
         />
         <Group gap="xs" style={{ flexDirection: "row" }}>
-          {!user && (
+          {user && (
             <>
               <Tooltip label="My cart" position="bottom">
                 <UnstyledButton component={Link} to="/cart">

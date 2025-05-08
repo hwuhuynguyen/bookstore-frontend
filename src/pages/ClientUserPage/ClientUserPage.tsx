@@ -1,38 +1,33 @@
 import React from "react";
 import {
   Avatar,
+  Badge,
+  Button,
   Card,
   Container,
   Grid,
   Group,
+  SimpleGrid,
   Stack,
   Text,
   ThemeIcon,
   Title,
 } from "@mantine/core";
 import {
+  IconCheck,
   IconHome,
   IconMail,
+  IconMapPin,
   IconMars,
   IconPhone,
   IconVenus,
 } from "@tabler/icons-react";
 import UserNavbar from "../../components/UserNavbar";
 import useAuthStore from "../../stores/AuthStore";
+import { AddressResponse } from "../../models/Address";
 
 function ClientUserPage() {
   const { user } = useAuthStore();
-
-  const renderAddress = () => {
-    return [
-      user?.address.line,
-      user?.address.ward?.name,
-      user?.address.district?.name,
-      user?.address.province?.name,
-    ]
-      .filter(Boolean)
-      .join(", ");
-  };
 
   return (
     <main>
@@ -58,10 +53,10 @@ function ClientUserPage() {
                       <Group justify="space-between">
                         <Group>
                           <Avatar color="cyan" size="md" radius="md">
-                            {user?.fullname.charAt(0)}
+                            {user?.firstName.charAt(0)}
                           </Avatar>
                           <Stack gap={0}>
-                            <Text fw={500}>{user?.fullname}</Text>
+                            <Text fw={500}>{user?.firstName + " " + user?.lastName}</Text>
                             <Text color="dimmed">@{user?.username}</Text>
                           </Stack>
                         </Group>
@@ -85,15 +80,7 @@ function ClientUserPage() {
                       </Group>
 
                       {/* Address */}
-                      <Group gap="sm" wrap="nowrap">
-                        <ThemeIcon radius="xl" size="lg" variant="light">
-                          <IconHome size={20} strokeWidth={1.5} />
-                        </ThemeIcon>
-                        <Stack gap={0}>
-                          <Text fw={500}>Address</Text>
-                          <Text>{renderAddress()}</Text>
-                        </Stack>
-                      </Group>
+                      <AddressesSection addresses={user?.addresses} />
                     </Stack>
                   </Grid.Col>
 
@@ -112,7 +99,7 @@ function ClientUserPage() {
                           </ThemeIcon>
                           <Stack gap={0}>
                             <Text fw={500}>Phone</Text>
-                            <Text>{user?.phone}</Text>
+                            <Text>{user?.phoneNumber}</Text>
                           </Stack>
                         </Group>
                       </Group>
@@ -142,3 +129,75 @@ function ClientUserPage() {
 }
 
 export default ClientUserPage;
+
+function AddressesSection({ addresses }: {addresses: AddressResponse[] | undefined}) {
+  if (!addresses || addresses.length === 0) {
+    return (
+      <Group gap="sm" wrap="nowrap">
+        <ThemeIcon radius="xl" size="lg" variant="light">
+          <IconHome size={20} strokeWidth={1.5} />
+        </ThemeIcon>
+        <Stack gap={0}>
+          <Text fw={500}>Address</Text>
+          <Text color="dimmed">No addresses found</Text>
+        </Stack>
+      </Group>
+    );
+  }
+
+  const defaultAddress = addresses.find(addr => addr.isDefault) || addresses[0];
+  
+  return (
+    <Stack gap="md">
+      <Group gap="sm" wrap="nowrap">
+        <ThemeIcon radius="xl" size="lg" variant="light">
+          <IconHome size={20} strokeWidth={1.5} />
+        </ThemeIcon>
+        <Stack gap={0}>
+          <Text fw={500}>Addresses</Text>
+          <Text size="sm" color="dimmed">
+            {addresses.length} address{addresses.length !== 1 ? 'es' : ''} saved
+          </Text>
+        </Stack>
+      </Group>
+      
+      <SimpleGrid cols={{ base: 1, sm: addresses.length > 1 ? 2 : 1 }} spacing="md">
+        {addresses.map((address) => (
+          <Card
+            key={address.id}
+            shadow="sm"
+            p="md"
+            radius="md"
+            withBorder
+            style={{ border: address.id == defaultAddress.id ? '2px solid var(--mantine-color-blue-5)' : undefined }}
+          >
+            <Group justify="space-between" mb="xs">
+              <Group gap="xs">
+                <IconMapPin size={16} style={{ color: 'var(--mantine-color-gray-6)' }} />
+                <Text fw={500} size="sm" truncate>Address</Text>
+              </Group>
+              {address.id == defaultAddress.id && (
+                <Badge color="blue" variant="light" size="sm">
+                  <Group gap="xs">
+                    <IconCheck size={12} />
+                    <Text size="xs">Default</Text>
+                  </Group>
+                </Badge>
+              )}
+            </Group>
+            
+            <Text size="sm">{address.address}</Text>
+            
+            <Group mt="md" gap="xs">
+              {address.id != defaultAddress.id && <Button variant="light" size="xs" color="blue">Set as default</Button>}
+            </Group>
+          </Card>
+        ))}
+      </SimpleGrid>
+      
+      <Button variant="outline" size="sm" leftSection={<IconMapPin size={16} />} style={{ alignSelf: 'flex-start' }}>
+        Add new address
+      </Button>
+    </Stack>
+  );
+}

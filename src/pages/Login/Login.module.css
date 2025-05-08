@@ -18,11 +18,6 @@
   justify-content: center;
 }
 
-.input-root {
-  display: grid;
-  gap: 10px;
-}
-
 @media screen and (max-width: 1024px) {
   .wrapper {
     background-image: unset;
