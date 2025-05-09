@@ -77,7 +77,11 @@ export default function ClientBookDetailPage() {
             </Text>
 
             <Group gap="xs" mb="md">
-              <Rating value={book?.averageRating || 0} fractions={10} readOnly />
+              <Rating
+                value={book?.averageRating || 0}
+                fractions={10}
+                readOnly
+              />
               <Text size="sm" c="dimmed">
                 {book?.averageRating || 0}/5
               </Text>
@@ -130,7 +134,7 @@ export default function ClientBookDetailPage() {
             <Stack mb="md">
               <Group>
                 <Text fz={{ base: 24, sm: 28 }} fw={700}>
-                  {book.price || 0}đ
+                  {(book.price || 0).toLocaleString("vi-VN")}đ
                 </Text>
               </Group>
 
@@ -225,7 +229,7 @@ export default function ClientBookDetailPage() {
                     </Table.Tr>
                     <Table.Tr>
                       <Table.Th w={250}>Source</Table.Th>
-                      <Table.Td>GoodReads</Table.Td>
+                      <Table.Td>{book?.source?.name || "N/A"}</Table.Td>
                     </Table.Tr>
                     <Table.Tr>
                       <Table.Th w={250}>Category</Table.Th>
@@ -268,30 +272,33 @@ export default function ClientBookDetailPage() {
                       </Group>
 
                       <Stack gap="xs" mb="md">
-                        {MOCK_REVIEW_DATA.ratingDistribution.map((item: any) => (
-                          <Group key={item.stars} gap="xs">
-                            <Text fz="sm" w={35}>
-                              {item.stars} star
-                            </Text>
-                            <Progress
-                              value={
-                                (item.count / MOCK_REVIEW_DATA.totalReviews) * 100
-                              }
-                              size="sm"
-                              style={{ flex: 1 }}
-                              color={
-                                item.stars >= 4
-                                  ? "yellow"
-                                  : item.stars >= 3
-                                  ? "blue"
-                                  : "gray"
-                              }
-                            />
-                            <Text fz="sm" w={20} ta="right">
-                              {item.count}
-                            </Text>
-                          </Group>
-                        ))}
+                        {MOCK_REVIEW_DATA.ratingDistribution.map(
+                          (item: any) => (
+                            <Group key={item.stars} gap="xs">
+                              <Text fz="sm" w={35}>
+                                {item.stars} star
+                              </Text>
+                              <Progress
+                                value={
+                                  (item.count / MOCK_REVIEW_DATA.totalReviews) *
+                                  100
+                                }
+                                size="sm"
+                                style={{ flex: 1 }}
+                                color={
+                                  item.stars >= 4
+                                    ? "yellow"
+                                    : item.stars >= 3
+                                    ? "blue"
+                                    : "gray"
+                                }
+                              />
+                              <Text fz="sm" w={20} ta="right">
+                                {item.count}
+                              </Text>
+                            </Group>
+                          )
+                        )}
                       </Stack>
 
                       <Group gap="xs">
@@ -365,7 +372,7 @@ export default function ClientBookDetailPage() {
                 <Table.Tbody>
                   <Table.Tr>
                     <Table.Td>Price per unit</Table.Td>
-                    <Table.Td>{book.price || 0}đ</Table.Td>
+                    <Table.Td>{(book.price || 0).toLocaleString("vi-VN")}đ</Table.Td>
                   </Table.Tr>
                   <Table.Tr>
                     <Table.Td>Quantity</Table.Td>
@@ -376,7 +383,7 @@ export default function ClientBookDetailPage() {
                       <Text fw={700}>Total amount</Text>
                     </Table.Td>
                     <Table.Td>
-                      <Text fw={700}>{book.price * quantity || 0}đ</Text>
+                      <Text fw={700}>{(book.price * quantity || 0).toLocaleString("vi-VN")}đ</Text>
                     </Table.Td>
                   </Table.Tr>
                 </Table.Tbody>

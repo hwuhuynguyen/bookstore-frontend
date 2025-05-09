@@ -18,6 +18,11 @@ export interface BookResponse extends BaseResponse {
   price: number;
   categories: CategoryResponse[];
   authors: AuthorResponse[];
+  source: SourceResponse;
   inventory: number;
 }
 
+interface SourceResponse {
+  id: string;
+  name: string;
+}

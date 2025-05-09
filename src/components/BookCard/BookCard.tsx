@@ -1,5 +1,4 @@
 import {
-  Badge,
   Button,
   Card,
   Grid,
@@ -23,7 +22,7 @@ function BookCard({ book }: BookCardProps) {
       <Card shadow="sm" padding="lg" radius="md" withBorder>
         <Card.Section>
           <Image
-            src={book.imageUrl || ApplicationConstants.DEFAULT_THUMBNAIL_URL}
+            src={book?.imageUrl || ApplicationConstants.DEFAULT_THUMBNAIL_URL}
             height={160}
             style={{
               maxHeight: 200,
@@ -32,23 +31,27 @@ function BookCard({ book }: BookCardProps) {
           />
         </Card.Section>
 
-        <Group justify="space-between" mt="md" mb="xs" wrap="nowrap">
-          <Tooltip label={book.title} withArrow position="top">
+        <Group justify="space-between" mt="md" wrap="nowrap">
+          <Tooltip label={book?.title} withArrow position="top">
             <Text fw={500} lineClamp={1}>
-              {book.title}
+              {book?.title}
             </Text>
           </Tooltip>
-          <Badge color="pink">{book.price}</Badge>
         </Group>
-
+        <Text fw={700} size="lg" c="pink" mb="4px">
+          {(book?.price || 0).toLocaleString("vi-VN")}đ
+        </Text>
         <Text size="sm" c="dimmed" lineClamp={3}>
-          {book.description}
+          {book?.description}
         </Text>
 
         <Grid>
           <Grid.Col span={{ base: 9 }}>
             <Tooltip label="View details" withArrow position="top">
-              <Link to={`/books/${book.id}`} style={{ textDecoration: "none" }}>
+              <Link
+                to={`/books/${book?.slug}`}
+                style={{ textDecoration: "none" }}
+              >
                 <Button color="blue" fullWidth mt="sm" radius="md">
                   View details
                 </Button>
