@@ -1,41 +1,13 @@
 import { Carousel } from "@mantine/carousel";
-import { Badge, Button, Card, Group, Image, Text, Title } from "@mantine/core";
 import BookCard from "../BookCard";
+import { BookResponse } from "../../models/Book";
 
-function BookCarousel() {
-  const featuredBooks = [
-    {
-      id: 1,
-      title: "The Great Gatsby",
-      author: "F. Scott Fitzgerald",
-      price: 12.99,
-    },
-    { id: 2, title: "1984", author: "George Orwell", price: 10.99 },
-    { id: 2, title: "1984", author: "George Orwell", price: 10.99 },
-    { id: 2, title: "1984", author: "George Orwell", price: 10.99 },
-    { id: 2, title: "1984", author: "George Orwell", price: 10.99 },
-    { id: 2, title: "1984", author: "George Orwell", price: 10.99 },
-    { id: 2, title: "1984", author: "George Orwell", price: 10.99 },
-    { id: 2, title: "1984", author: "George Orwell", price: 10.99 },
-    { id: 2, title: "1984", author: "George Orwell", price: 10.99 },
-    { id: 2, title: "1984", author: "George Orwell", price: 10.99 },
-    { id: 2, title: "1984", author: "George Orwell", price: 10.99 },
-    { id: 2, title: "1984", author: "George Orwell", price: 10.99 },
-    { id: 2, title: "1984", author: "George Orwell", price: 10.99 },
-    {
-      id: 3,
-      title: "To Kill a Mockingbird",
-      author: "Harper Lee",
-      price: 11.99,
-    },
-  ];
+interface BookCarouselProps {
+  books: BookResponse[];
+}
+function BookCarousel({ books }: BookCarouselProps) {
   return (
     <>
-      <Title order={2}>
-        <Text color="orange" inherit>
-          Recommended for you
-        </Text>
-      </Title>
       <Carousel
         withControls
         withIndicators
@@ -44,14 +16,14 @@ function BookCarousel() {
         slideGap={"sm"}
         align="start"
       >
-        {featuredBooks.map((book) => (
+        {books?.map((book) => (
           <Carousel.Slide
             style={{
               height: "100%",
               minHeight: 315,
             }}
           >
-            <BookCard />
+            <BookCard book={book} />
           </Carousel.Slide>
         ))}
       </Carousel>

@@ -14,7 +14,7 @@ export interface RequestParams {
  * ListResponse dùng để thể hiện đối tượng trả về sau lệnh getAll
  */
 export interface ListResponse<O = unknown> {
-  content: O[];
+  data: O[];
   page: number;
   size: number;
   totalElements: number;

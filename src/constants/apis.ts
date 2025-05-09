@@ -10,6 +10,8 @@ class ResourceURL {
   static REGENERATE_TOKEN = apiPath + '/auth/regenerate-token';
 
   static CLIENT_USER_INFO = apiPath + '/users/personal-info';
+
+  static CLIENT_BOOK = apiPath + '/books';
 }
 
 export default ResourceURL;
