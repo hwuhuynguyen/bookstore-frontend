@@ -27,7 +27,7 @@ import { useParams } from "react-router-dom";
 import FetchUtils, { ErrorMessage } from "../../utils/FetchUtils";
 import { BookResponse } from "../../models/Book";
 import { useQuery } from "@tanstack/react-query";
-import ResourceURL from "../../constants/apis";
+import ResourceURL from "../../constants/ResourceURL";
 import ErrorFetchingPage from "../ErrorFetchingPage";
 import ApplicationConstants from "../../constants/ApplicationConstants";
 import { MOCK_REVIEW_DATA } from "../../data/reviews";
@@ -63,6 +63,11 @@ export default function ClientBookDetailPage() {
                 }
                 radius="md"
                 fit="contain"
+                alt={book.title}
+                onError={(e) => {
+                  e.currentTarget.src =
+                    ApplicationConstants.DEFAULT_THUMBNAIL_URL;
+                }}
               />
               <Button fullWidth variant="outline" color="gray" mt="md">
                 Preview
@@ -234,11 +239,13 @@ export default function ClientBookDetailPage() {
                     <Table.Tr>
                       <Table.Th w={250}>Category</Table.Th>
                       <Table.Td>
-                        {book?.categories.map((category) => (
-                          <Badge key={category.id} color="cyan" mr={4}>
-                            {category.name}
-                          </Badge>
-                        ))}
+                        {book?.categories && book.categories.length > 0
+                          ? book.categories.map((category) => (
+                              <Badge key={category.id} color="cyan" mr={4}>
+                                {category.name}
+                              </Badge>
+                            ))
+                          : "N/A"}
                       </Table.Td>
                     </Table.Tr>
                   </Table.Tbody>
@@ -372,7 +379,9 @@ export default function ClientBookDetailPage() {
                 <Table.Tbody>
                   <Table.Tr>
                     <Table.Td>Price per unit</Table.Td>
-                    <Table.Td>{(book.price || 0).toLocaleString("vi-VN")}đ</Table.Td>
+                    <Table.Td>
+                      {(book.price || 0).toLocaleString("vi-VN")}đ
+                    </Table.Td>
                   </Table.Tr>
                   <Table.Tr>
                     <Table.Td>Quantity</Table.Td>
@@ -383,7 +392,9 @@ export default function ClientBookDetailPage() {
                       <Text fw={700}>Total amount</Text>
                     </Table.Td>
                     <Table.Td>
-                      <Text fw={700}>{(book.price * quantity || 0).toLocaleString("vi-VN")}đ</Text>
+                      <Text fw={700}>
+                        {(book.price * quantity || 0).toLocaleString("vi-VN")}đ
+                      </Text>
                     </Table.Td>
                   </Table.Tr>
                 </Table.Tbody>

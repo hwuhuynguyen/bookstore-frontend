@@ -15,8 +15,8 @@ export interface RequestParams {
  */
 export interface ListResponse<O = unknown> {
   data: O[];
-  page: number;
-  size: number;
+  currentPage: number;
+  pageSize: number;
   totalElements: number;
   totalPages: number;
   last: boolean;

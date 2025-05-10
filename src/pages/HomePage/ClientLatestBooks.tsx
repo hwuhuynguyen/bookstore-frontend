@@ -2,7 +2,7 @@ import React from "react";
 import { Skeleton, Stack, Text, Title, useMantineTheme } from "@mantine/core";
 import FetchUtils, { ErrorMessage, ListResponse } from "../../utils/FetchUtils";
 import { useQuery } from "@tanstack/react-query";
-import ResourceURL from "../../constants/apis";
+import ResourceURL from "../../constants/ResourceURL";
 import BookCarousel from "../../components/BookCarousel";
 import { IconAlertTriangle, IconMarquee } from "@tabler/icons-react";
 import { BookResponse } from "../../models/Book";
