@@ -7,7 +7,7 @@ import ClientBookDetailPage from "../pages/ClientBookDetailPage";
 import ClientShoppingCart from "../pages/ClientShoppingCart";
 import ClientSettingPage from "../pages/ClientSettingPage";
 import ClientUserPage from "../pages/ClientUserPage";
-import ErrorPage from "../pages/ErrorPage";
+import ErrorPage from "../pages/ErrorNotFoundPage";
 import ClientOrderPage from "../pages/ClientOrderPage";
 import ClientOrderDetailPage from "../pages/ClientOrderDetailPage";
 import ClientWishlistPage from "../pages/ClientWishlistPage";

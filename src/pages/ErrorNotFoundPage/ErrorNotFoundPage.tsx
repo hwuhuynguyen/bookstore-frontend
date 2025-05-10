@@ -1,9 +1,9 @@
 import React from "react";
-import { Button, Center, Container, Stack, Text, Title } from "@mantine/core";
+import { Button, Center, Container, Stack, Title } from "@mantine/core";
 import { Link } from "react-router-dom";
 import { IconError404 } from "@tabler/icons-react";
 
-function ErrorPage() {
+function ErrorNotFoundPage() {
   return (
     <main>
       <Container size="xl">
@@ -23,4 +23,4 @@ function ErrorPage() {
   );
 }
 
-export default ErrorPage;
+export default ErrorNotFoundPage;
