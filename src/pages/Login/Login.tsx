@@ -17,7 +17,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import FetchUtils, { ErrorMessage } from "../../utils/FetchUtils";
 import { JwtResponse, LoginRequest } from "../../models/Authentication";
-import ResourceURL from "../../constants/apis";
+import ResourceURL from "../../constants/ResourceURL";
 import { UserResponse } from "../../models/User";
 import NotifyUtils from "../../utils/NotifyUtils";
 import { HOMEPAGE } from "../../constants";

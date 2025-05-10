@@ -16,7 +16,7 @@ import { useForm } from "@mantine/form";
 import { useMutation } from "@tanstack/react-query";
 import { JwtResponse, LoginRequest } from "../../models/Authentication";
 import FetchUtils, { ErrorMessage } from "../../utils/FetchUtils";
-import ResourceURL from "../../constants/apis";
+import ResourceURL from "../../constants/ResourceURL";
 import { UserResponse } from "../../models/User";
 import NotifyUtils from "../../utils/NotifyUtils";
 

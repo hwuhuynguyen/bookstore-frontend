@@ -1,4 +1,4 @@
-export const booksData: any[] = [
+export const MOCK_BOOK_DATA: any[] = [
     {
       id: 1,
       title: "MỘT THOÁNG TA RỰC RỠ Ở NHÂN GIAN",

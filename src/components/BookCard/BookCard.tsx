@@ -1,12 +1,4 @@
-import {
-  Button,
-  Card,
-  Grid,
-  Group,
-  Image,
-  Text,
-  Tooltip,
-} from "@mantine/core";
+import { Button, Card, Grid, Group, Image, Text, Tooltip } from "@mantine/core";
 import { IconShoppingCart } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 import { BookResponse } from "../../models/Book";
@@ -23,11 +15,13 @@ function BookCard({ book }: BookCardProps) {
         <Card.Section>
           <Image
             src={book?.imageUrl || ApplicationConstants.DEFAULT_THUMBNAIL_URL}
-            height={160}
             style={{
-              maxHeight: 200,
+              height: 200,
             }}
-            alt="Norway"
+            alt={book?.title}
+            onError={(e) => {
+              e.currentTarget.src = ApplicationConstants.DEFAULT_THUMBNAIL_URL;
+            }}
           />
         </Card.Section>
 
@@ -41,7 +35,7 @@ function BookCard({ book }: BookCardProps) {
         <Text fw={700} size="lg" c="pink" mb="4px">
           {(book?.price || 0).toLocaleString("vi-VN")}đ
         </Text>
-        <Text size="sm" c="dimmed" lineClamp={3}>
+        <Text size="sm" c="dimmed" lineClamp={3} style={{ minHeight: "4.5em" }}>
           {book?.description}
         </Text>
 

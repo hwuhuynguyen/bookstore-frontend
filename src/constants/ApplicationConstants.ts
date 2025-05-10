@@ -12,6 +12,32 @@ class ApplicationConstants {
 
   static DEFAULT_THUMBNAIL_URL =
     "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-8.png";
+
+  static BOOK_PRICE_OPTIONS = [
+    [0, 100000],
+    [100000, 200000],
+    [200000, 400000],
+    [400000, 600000],
+    [600000, 1000000],
+    [1000000, null],
+  ];
+
+  static BOOK_RATING_OPTIONS = ["5", "4", "3", "2", "1"];
+
+  static BOOK_SOURCE_OPTIONS = [
+    {
+      value: "1",
+      label: "ThriftBooks",
+    },
+    {
+      value: "2",
+      label: "Book Crossing",
+    },
+    {
+      value: "3",
+      label: "GoodReads",
+    },
+  ];
 }
 
 export default ApplicationConstants;

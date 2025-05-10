@@ -12,6 +12,7 @@ class ResourceURL {
   static CLIENT_USER_INFO = apiPath + '/users/personal-info';
 
   static CLIENT_BOOK = apiPath + '/books';
+  static CLIENT_CATEGORY = apiPath + '/categories';
 }
 
 export default ResourceURL;
