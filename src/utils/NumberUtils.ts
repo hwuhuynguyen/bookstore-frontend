@@ -14,6 +14,10 @@ class NumberUtils {
   static generatePriceOptions(quartiles: (number | null)[][]) {
     return quartiles;
   }
+
+  static formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("vi-VN").format(amount) + " ₫";
+  };
 }
 
 export default NumberUtils;

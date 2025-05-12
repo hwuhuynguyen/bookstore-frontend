@@ -57,7 +57,9 @@ function ClientSearchBookPage() {
     resetClientSearchBookState,
   } = useClientSearchBook();
 
-  const [searchQuery, setSearchQuery] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string | null>(
+    activeSearch || null
+  );
 
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
@@ -103,9 +105,12 @@ function ClientSearchBookPage() {
   const ratingFilter = selectedRating ? `rating:${selectedRating}` : null;
   const sourceFilter = selectedSource ? `source:${selectedSource}` : null;
 
-  const filterParts = [categoryFilter, priceFilter, ratingFilter, sourceFilter].filter(
-    Boolean
-  );
+  const filterParts = [
+    categoryFilter,
+    priceFilter,
+    ratingFilter,
+    sourceFilter,
+  ].filter(Boolean);
   const filter = filterParts.length > 0 ? filterParts.join(",") : null;
 
   const requestParams = {

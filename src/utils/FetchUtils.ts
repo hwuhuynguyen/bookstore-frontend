@@ -172,7 +172,7 @@ class FetchUtils {
    * @param entityIds
    * @param isAdmin
    */
-  static async deleteWithToken<T>(resourceUrl: string, entityIds: T[], isAdmin?: boolean) {
+  static async deleteWithToken<T>(resourceUrl: string, entityIds: T, isAdmin?: boolean) {
     const token = JSON.parse(localStorage
       .getItem(isAdmin ? 'admin-auth-storage' : 'auth-storage') || '{}').state?.accessToken;
 

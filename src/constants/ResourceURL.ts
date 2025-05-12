@@ -13,6 +13,7 @@ class ResourceURL {
 
   static CLIENT_BOOK = apiPath + '/books';
   static CLIENT_CATEGORY = apiPath + '/categories';
+  static CLIENT_CART = apiPath + '/cart';
 }
 
 export default ResourceURL;

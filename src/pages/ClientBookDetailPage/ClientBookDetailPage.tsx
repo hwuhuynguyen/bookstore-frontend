@@ -26,21 +26,53 @@ import { IconMinus, IconPlus, IconShoppingCart } from "@tabler/icons-react";
 import { useParams } from "react-router-dom";
 import FetchUtils, { ErrorMessage } from "../../utils/FetchUtils";
 import { BookResponse } from "../../models/Book";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import ResourceURL from "../../constants/ResourceURL";
 import ErrorFetchingPage from "../ErrorFetchingPage";
 import ApplicationConstants from "../../constants/ApplicationConstants";
 import { MOCK_REVIEW_DATA } from "../../data/reviews";
+import { AddToCartRequest, CartResponse } from "../../models/Cart";
+import useAuthStore from "../../stores/AuthStore";
+import NotifyUtils from "../../utils/NotifyUtils";
 
 export default function ClientBookDetailPage() {
   const theme = useMantineTheme();
+  const queryClient = useQueryClient();
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<string>("details");
+  const { user, updateCurrentTotalCartItems } = useAuthStore();
 
   const { id } = useParams();
   const { bookResponse, isLoadingBookResponse, isErrorBookResponse } =
     useGetBookApi(id as string);
   const book = bookResponse as BookResponse;
+
+  const addQuantityMutation = useMutation<
+    CartResponse,
+    ErrorMessage,
+    AddToCartRequest
+  >({
+    mutationFn: ({ bookId, quantity }: AddToCartRequest) =>
+      FetchUtils.postWithToken(`${ResourceURL.CLIENT_CART}/items`, {
+        bookId,
+        quantity,
+      }),
+    onSuccess: (response: CartResponse) => {
+      const totalItems = response.cartItems?.length;
+      updateCurrentTotalCartItems(totalItems);
+      queryClient.invalidateQueries({
+        queryKey: ["client-api", "carts", "getCart"],
+      });
+    },
+  });
+
+  const handleAddToCart = () => {
+    if (user) {
+      addQuantityMutation.mutate({ bookId: book.id, quantity });
+    } else {
+      NotifyUtils.simpleFailed("Please log in to continue with this action.");
+    }
+  };
 
   if (isLoadingBookResponse) {
     return <ClientBookSkeleton />;
@@ -148,6 +180,7 @@ export default function ClientBookDetailPage() {
                   variant="filled"
                   color="cyan"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  disabled={quantity === 1}
                 >
                   <IconMinus size={16} />
                 </ActionIcon>
@@ -155,7 +188,10 @@ export default function ClientBookDetailPage() {
                 <ActionIcon
                   variant="filled"
                   color="cyan"
-                  onClick={() => setQuantity(quantity + 1)}
+                  onClick={() =>
+                    setQuantity(Math.min(book?.inventory || 0, quantity + 1))
+                  }
+                  disabled={book?.inventory === quantity}
                 >
                   <IconPlus size={16} />
                 </ActionIcon>
@@ -406,6 +442,7 @@ export default function ClientBookDetailPage() {
                 leftSection={<IconShoppingCart size={18} />}
                 mt="md"
                 radius="md"
+                onClick={handleAddToCart}
               >
                 Add to cart
               </Button>
