@@ -10,6 +10,7 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   user: UserResponse | null;
+  currentTotalCartItems: number;
 }
 
 /**
@@ -18,6 +19,7 @@ interface AuthState {
 interface AuthActions {
   updateJwtToken: (jwtResponse: JwtResponse) => void;
   updateUser: (value: UserResponse) => void;
+  updateCurrentTotalCartItems: (value: number) => void;
   resetAuthState: () => void;
 }
 
@@ -37,6 +39,7 @@ const useAuthStore = create<AuthStore>()(
       accessToken: null,
       refreshToken: null,
       user: null,
+      currentTotalCartItems: 0,
 
       updateJwtToken: (jwtResponse: JwtResponse) => {
         set({
@@ -45,12 +48,15 @@ const useAuthStore = create<AuthStore>()(
         });
       },
       updateUser: (value) => set(() => ({ user: value })),
+      updateCurrentTotalCartItems: (value) =>
+        set(() => ({ currentTotalCartItems: value })),
 
       resetAuthState: () => {
         set(() => ({
           accessToken: null,
           refreshToken: null,
           user: null,
+          currentTotalCartItems: 0,
         }));
       },
     }),
@@ -60,6 +66,7 @@ const useAuthStore = create<AuthStore>()(
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         user: state.user,
+        currentTotalCartItems: state.currentTotalCartItems
       }),
     }
   )

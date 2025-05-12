@@ -58,7 +58,11 @@ export const publicRoutes: RouteObject[] = [
       // --- FOR AUTHENTICATED USERS ---
       {
         path: "cart",
-        element: <ClientShoppingCart />,
+        element: (
+          <RequireAuth>
+            <ClientShoppingCart />,
+          </RequireAuth>
+        ),
       },
       {
         path: "order",

@@ -21,9 +21,16 @@ import ResourceURL from "../../constants/ResourceURL";
 import { UserResponse } from "../../models/User";
 import NotifyUtils from "../../utils/NotifyUtils";
 import { HOMEPAGE } from "../../constants";
+import { CartResponse } from "../../models/Cart";
 
 function LoginPage() {
-  const { user, updateJwtToken, updateUser, resetAuthState } = useAuthStore();
+  const {
+    user,
+    updateJwtToken,
+    updateUser,
+    resetAuthState,
+    updateCurrentTotalCartItems,
+  } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [redirectPath] = useState(
@@ -53,9 +60,9 @@ function LoginPage() {
     mutationFn: () => FetchUtils.getWithToken(ResourceURL.CLIENT_USER_INFO),
   });
 
-  // const cartApi = useMutation<ClientCartResponse | Empty, ErrorMessage>((_) =>
-  //   FetchUtils.getWithToken(ResourceURL.CLIENT_CART)
-  // );
+  const cartApi = useMutation<CartResponse, ErrorMessage>({
+    mutationFn: () => FetchUtils.getWithToken(ResourceURL.CLIENT_CART),
+  });
 
   const handleFormSubmit = form.onSubmit(async (formValues) => {
     if (!user) {
@@ -71,15 +78,8 @@ function LoginPage() {
         const userResponse = await userInfoApi.mutateAsync();
         updateUser(userResponse);
 
-        // const cartResponse = await cartApi.mutateAsync();
-        // // Reference: https://stackoverflow.com/a/136411
-        // if (Object.hasOwn(cartResponse, "cartId")) {
-        //   updateCurrentCartId(cartResponse.cartId);
-        //   updateCurrentTotalCartItems(cartResponse.cartItems.length);
-        // } else {
-        //   updateCurrentCartId(null);
-        //   updateCurrentTotalCartItems(0);
-        // }
+        const cartResponse = await cartApi.mutateAsync();
+        updateCurrentTotalCartItems(cartResponse.cartItems.length);
 
         NotifyUtils.simpleSuccess("Login successfully!");
         navigate(redirectPath, { replace: true });

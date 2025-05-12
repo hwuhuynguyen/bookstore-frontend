@@ -34,6 +34,7 @@ import {
 import classes from "./DefaultHeader.module.css";
 import AppLogo from "../AppLogo";
 import NotifyUtils from "../../utils/NotifyUtils";
+import useClientSearchBook from "../../stores/ClientSearchBookStore";
 
 function DefaultHeader() {
   const theme = useMantineTheme();
@@ -42,6 +43,10 @@ function DefaultHeader() {
   const { ref: refHeaderStack } = useElementSize();
 
   const { user, resetAuthState } = useAuthStore();
+  const { updateActiveSearch } = useClientSearchBook();
+  const currentTotalCartItems = useAuthStore(
+    (state) => state.currentTotalCartItems
+  );
 
   // Search state & function
   const navigate = useNavigate();
@@ -62,7 +67,8 @@ function DefaultHeader() {
 
   const handleSearchInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && search.trim() !== "") {
-      navigate("/search?q=" + search.trim());
+      updateActiveSearch(search.trim())
+      navigate("/books");
     }
   };
 
@@ -120,7 +126,7 @@ function DefaultHeader() {
                   >
                     <IconShoppingCart strokeWidth={1} />
                     <Text fw={500} size="sm">
-                      {0}
+                      {currentTotalCartItems || 0}
                     </Text>
                   </Group>
                 </UnstyledButton>
