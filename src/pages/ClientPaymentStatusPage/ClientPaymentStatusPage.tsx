@@ -259,9 +259,9 @@ export default function ClientPaymentStatusPage() {
             </Table.Tbody>
           </Table>
           <Divider />
-                <Title order={3} ff="system-ui" fw={600} ml={36}>
-                  ORDER DETAILS
-                </Title>
+          <Title order={3} ff="system-ui" fw={600} ml={36}>
+            ORDER DETAILS
+          </Title>
           <Table>
             <Table.Thead>
               <Table.Tr>

@@ -13,5 +13,6 @@ export interface TransactionResponse {
 }
 
 export interface VnPayResponse {
-  paymentUrl: string;
+  orderId: string;
+  paymentUrl?: string;
 }

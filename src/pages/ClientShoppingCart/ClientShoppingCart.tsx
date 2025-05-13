@@ -35,9 +35,11 @@ import { AddressRequest, AddressResponse } from "../../models/Address";
 import { UserResponse } from "../../models/User";
 import { OrderRequest } from "../../models/Order";
 import { VnPayResponse } from "../../models/Payment";
+import { useNavigate } from "react-router-dom";
 
 export default function ClientShoppingCart() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const {
     user,
     currentTotalCartItems,
@@ -171,8 +173,12 @@ export default function ClientShoppingCart() {
       queryClient.invalidateQueries({
         queryKey: ["client-api", "carts", "getCart"],
       });
-      updateCurrentTotalCartItems(0)
-      window.location.href = data.paymentUrl;
+      updateCurrentTotalCartItems(0);
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+      } else {
+        navigate(`/cart/payment/${data.orderId}`);
+      }
     },
   });
 
