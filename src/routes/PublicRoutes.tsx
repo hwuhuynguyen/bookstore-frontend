@@ -16,6 +16,7 @@ import ClientReviewPage from "../pages/ClientReviewPage";
 import RegisterPage from "../pages/Register";
 import RequireAuth from "../components/RequiredAuth";
 import GuestRoute from "../components/GuestOnly";
+import ClientPaymentStatusPage from "../pages/ClientPaymentStatusPage/ClientPaymentStatusPage";
 
 export const publicRoutes: RouteObject[] = [
   {
@@ -61,6 +62,14 @@ export const publicRoutes: RouteObject[] = [
         element: (
           <RequireAuth>
             <ClientShoppingCart />,
+          </RequireAuth>
+        ),
+      },
+      {
+        path: "cart/payment",
+        element: (
+          <RequireAuth>
+            <ClientPaymentStatusPage />
           </RequireAuth>
         ),
       },

@@ -76,7 +76,14 @@ function LoginPage() {
         updateJwtToken(jwtResponse);
 
         const userResponse = await userInfoApi.mutateAsync();
-        updateUser(userResponse);
+
+        const sortedAddresses = [...userResponse.addresses].sort((a, b) => {
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+        });
+
+        updateUser({ ...userResponse, addresses: sortedAddresses });
 
         const cartResponse = await cartApi.mutateAsync();
         updateCurrentTotalCartItems(cartResponse.cartItems.length);
