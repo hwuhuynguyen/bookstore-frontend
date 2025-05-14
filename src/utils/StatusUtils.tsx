@@ -5,26 +5,26 @@ class StatusUtils {
     switch (status) {
       case "PENDING":
         return (
-          <Badge color="gray" variant="filled" size="sm">
+          <Badge color="yellow" variant="filled">
             Pending
           </Badge>
         );
       case "PROCESSING":
         return (
-          <Badge color="blue" variant="filled" size="sm">
+          <Badge color="blue" variant="filled">
             Processing
           </Badge>
         );
       case "COMPLETED":
         return (
-          <Badge color="green" variant="filled" size="sm">
-            Comlpeted
+          <Badge color="green" variant="filled">
+            Completed
           </Badge>
         );
-      case "CANCELED":
+      case "CANCELLED":
         return (
-          <Badge color="red" variant="filled" size="sm">
-            Canceled
+          <Badge color="grape" variant="filled">
+            Cancelled
           </Badge>
         );
     }
@@ -34,20 +34,32 @@ class StatusUtils {
     switch (paymentStatus) {
       case "PENDING":
         return (
-          <Badge color="gray" variant="filled" size="sm">
+          <Badge color="gray" variant="filled">
             Not paid
           </Badge>
         );
       case "COMPLETED":
         return (
-          <Badge color="green" variant="filled" size="sm">
-            Completed
+          <Badge color="green" variant="filled">
+            Paid
+          </Badge>
+        );
+      case "CANCELLED":
+        return (
+          <Badge color="grape" variant="filled">
+            Cancelled
           </Badge>
         );
       case "FAILED":
         return (
-          <Badge color="red" variant="filled" size="sm">
-            FAILED
+          <Badge color="red" variant="filled">
+            Failed
+          </Badge>
+        );
+      case "REFUNDED":
+        return (
+          <Badge color="orange" variant="filled">
+            Refunded
           </Badge>
         );
     }

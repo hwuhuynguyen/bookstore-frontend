@@ -8,6 +8,10 @@ export interface OrderRequest {
   paymentTypeId: number;
 }
 
+export interface UpdateOrderStatusRequest {
+  orderStatus: string
+}
+
 export interface OrderResponse {
   id: string;
   siteUser: UserResponse

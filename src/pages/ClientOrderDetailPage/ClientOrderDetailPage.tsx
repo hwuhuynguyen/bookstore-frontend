@@ -81,6 +81,9 @@ function ClientOrderDetailPage() {
               <Text color="dimmed">
                 Order date: {DateUtils.convertTimestampToUTC(order.createdAt)}
               </Text>
+              <Text color="dimmed">
+                Payment method: {order.payment.paymentType}
+              </Text>
             </Stack>
             <Group gap="xs">
               {StatusUtils.orderStatusBadgeFragment(order.orderStatus)}
