@@ -18,16 +18,18 @@ import { Link, useParams } from "react-router-dom";
 import UserNavbar from "../../components/UserNavbar";
 import OrderItemRow from "../../components/OrderItemRow";
 import StatusUtils from "../../utils/StatusUtils";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { OrderResponse } from "../../models/Order";
 import FetchUtils, { ErrorMessage } from "../../utils/FetchUtils";
 import ResourceURL from "../../constants/ResourceURL";
 import DateUtils from "../../utils/DateUtils";
 import ApplicationConstants from "../../constants/ApplicationConstants";
 import NumberUtils from "../../utils/NumberUtils";
+import NotifyUtils from "../../utils/NotifyUtils";
 
 function ClientOrderDetailPage() {
   const theme = useMantineTheme();
+  const queryClient = useQueryClient();
   const { orderId } = useParams();
 
   const {
@@ -40,6 +42,25 @@ function ClientOrderDetailPage() {
       FetchUtils.getWithToken(ResourceURL.CLIENT_ORDER + "/" + orderId),
     refetchOnWindowFocus: false,
   });
+
+  const cancelOrder = useMutation({
+    mutationFn: (orderId: string) =>
+      FetchUtils.putWithToken(
+        `${ResourceURL.CLIENT_ORDER}/${orderId}/cancel`,
+        {}
+      ),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["client-api", "getOrderDetail", orderId],
+      });
+      NotifyUtils.simpleSuccess("This order is cancelled successfully.");
+    },
+  });
+
+  const handleCancelOrder = () => {
+    if (orderId) cancelOrder.mutate(orderId);
+  };
 
   const order = orderResponse as OrderResponse;
 
@@ -213,19 +234,19 @@ function ClientOrderDetailPage() {
           >
             Back to Order page
           </Button>
-          <Button
-            color="red"
-            variant="light"
-            radius="md"
-            style={{ width: "fit-content" }}
-            disabled={
-              !ApplicationConstants.CANCELABLE_STATUSES.includes(
-                order.orderStatus
-              )
-            }
-          >
-            Cancel order
-          </Button>
+          {ApplicationConstants.CANCELABLE_STATUSES.includes(
+            order.orderStatus
+          ) && (
+            <Button
+              color="red"
+              variant="light"
+              radius="md"
+              style={{ width: "fit-content" }}
+              onClick={handleCancelOrder}
+            >
+              Cancel order
+            </Button>
+          )}
         </Group>
       </Stack>
     );
