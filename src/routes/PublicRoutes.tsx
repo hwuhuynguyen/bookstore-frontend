@@ -84,7 +84,11 @@ export const publicRoutes: RouteObject[] = [
       },
       {
         path: "order",
-        element: <ClientOrderPage />,
+        element: (
+          <RequireAuth>
+            <ClientOrderPage />,
+          </RequireAuth>
+        ),
       },
       {
         path: "order/detail/:orderId",
