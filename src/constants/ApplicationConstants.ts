@@ -38,11 +38,23 @@ class ApplicationConstants {
       label: "GoodReads",
     },
   ];
-  
-  static CANCELABLE_STATUSES = [
+
+  static ORDER_STATUSES = [
     "PENDING",
-    "PROCESSING"
-  ]
+    "PROCESSING",
+    "COMPLETED",
+    "CANCELLED",
+  ];
+
+  static CANCELABLE_STATUSES = ["PENDING", "PROCESSING"];
+
+  static PAYMENT_STATUSES = [
+    "PENDING",
+    "COMPLETED",
+    "FAILED",
+    "CANCELLED",
+    "REFUNDED",
+  ];
 }
 
 export default ApplicationConstants;

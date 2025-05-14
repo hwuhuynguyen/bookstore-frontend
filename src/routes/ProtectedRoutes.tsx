@@ -6,6 +6,7 @@ import AdminCategoryPage from "../pages/AdminCategoryPage";
 import AdminOrderPage from "../pages/AdminOrderPage";
 import AdminUserPage from "../pages/AdminUserPage";
 import AdminAuthorPage from "../pages/AdminAuthorPage";
+import ErrorNotFoundPage from "../pages/ErrorNotFoundPage";
 
 export const protectedRoutes: RouteObject[] = [
   {
@@ -39,6 +40,10 @@ export const protectedRoutes: RouteObject[] = [
       {
         path: "users",
         element: <AdminUserPage />,
+      },
+      {
+        path: "*",
+        element: <ErrorNotFoundPage />,
       },
     ],
   },

@@ -19,8 +19,13 @@ class ResourceURL {
   static CLIENT_ORDER = apiPath + "/orders";
   static CLIENT_CHECKOUT = this.CLIENT_ORDER + "/checkout";
   static CLIENT_GET_MY_ORDERS = this.CLIENT_ORDER + "/my-orders"
-
+  
   static CLIENT_PAYMENT_VNPAY_RETURN = apiPath + "/payment/vnpay-return";
+  
+
+  // --- ADMIN ROUTE ---
+  static ADMIN_GET_ALL_ORDERS = this.CLIENT_ORDER + "/all-orders"
+
 }
 
 export default ResourceURL;

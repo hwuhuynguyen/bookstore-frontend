@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import { DefaultHeader } from "../../components/Header";
 import DefaultFooter from "../../components/Footer/DefaultFooter";
+import DefaultHeader from "../../components/Header";
 
 const PublicLayout = () => {
   return (
