@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   Card,
+  Center,
   Container,
   Grid,
   Group,
@@ -11,45 +12,43 @@ import {
   Title,
   useMantineTheme,
 } from "@mantine/core";
-import { IconMoodAnnoyed } from "@tabler/icons-react";
-import useAuthStore from "../../stores/AuthStore";
+import { IconAlertTriangle, IconMoodAnnoyed } from "@tabler/icons-react";
 import UserNavbar from "../../components/UserNavbar";
 import OrderCard from "../../components/OrderCard";
+import { useQuery } from "@tanstack/react-query";
+import FetchUtils, { ErrorMessage, ListResponse } from "../../utils/FetchUtils";
+import { OrderResponse } from "../../models/Order";
+import ResourceURL from "../../constants/ResourceURL";
 
 function ClientOrderPage() {
   const theme = useMantineTheme();
-  const { user } = useAuthStore();
-  // const [orders, setOrders] = useState([]);
+  const [activePage, setActivePage] = useState<number>(1);
 
-  const orders = [{
-    orderId: 1,
-    createdAt: '2025-04-22T10:00:00Z',
-    orderCode: 'ORD-20250422-0001',
-    orderStatus: 2, 
-    total: 150.75,
-    orderItems: [
-      {
-        id: 101,
-        title: 'Wireless Mouse',
-        quantity: 2,
-        price: 25.00,
-      },
-      {
-        id: 102,
-        title: 'Mechanical Keyboard',
-        quantity: 1,
-        price: 100.75,
-      },
-    ],
-    orderPaymentStatus: 1,
-  }];
-  
-  const [isLoading, setIsLoading] = useState(false);
-  const [activePage, setActivePage] = useState<number>(0);
+  const requestParams = {
+    size: 5,
+    page: activePage - 1,
+    sort: "createdAt,desc",
+  };
+
+  const {
+    data: orderResponses,
+    isLoading: isLoadingOrderResponses,
+    isError: isErrorOrderResponses,
+  } = useQuery<ListResponse<OrderResponse>, ErrorMessage>({
+    queryKey: ["client-api", "orders", "getOrders", requestParams],
+    queryFn: () =>
+      FetchUtils.getWithToken<ListResponse<OrderResponse>>(
+        ResourceURL.CLIENT_GET_MY_ORDERS,
+        requestParams
+      ),
+    refetchOnWindowFocus: false,
+  });
+
+  const orders = orderResponses as ListResponse<OrderResponse>;
 
   let ordersContentFragment;
 
-  if (isLoading) {
+  if (isLoadingOrderResponses) {
     ordersContentFragment = (
       <Stack>
         {Array(5)
@@ -61,7 +60,21 @@ function ClientOrderPage() {
     );
   }
 
-  if (orders && orders.length === 0) {
+  if (isErrorOrderResponses) {
+    ordersContentFragment = (
+      <Stack
+        my={theme.spacing.xl}
+        style={{ alignItems: "center", color: theme.colors.pink[6] }}
+      >
+        <IconAlertTriangle size={125} strokeWidth={1} />
+        <Text size="xl" fw={500}>
+          Error occurred while fetching data
+        </Text>
+      </Stack>
+    );
+  }
+
+  if (orders && orders.totalElements === 0) {
     ordersContentFragment = (
       <Stack
         my={theme.spacing.xl}
@@ -75,27 +88,28 @@ function ClientOrderPage() {
     );
   }
 
-  if (orders && orders.length > 0) {
+  if (orders && orders.totalElements > 0) {
     ordersContentFragment = (
       <>
         <Stack gap="xs">
-          {orders.map((order) => (
-            <OrderCard key={order.orderId} order={order} />
+          {orders.data.map((order) => (
+            <OrderCard key={order.id} order={order} />
           ))}
         </Stack>
-
-        <Group justify="space-between" mt={theme.spacing.lg}>
+        <Group justify="center" mt={theme.spacing.lg}>
           <Pagination
-            total={100}
+            value={activePage}
+            total={orders.totalPages}
             onChange={(page: number) =>
               page !== activePage && setActivePage(page)
             }
           />
-          <Text>
-            <Text component="span">Page {activePage}</Text>
-            <span>/{100}</span>
-          </Text>
         </Group>
+        <Center>
+          <Text component="span">
+            Page {activePage} / {orders.totalPages}
+          </Text>
+        </Center>
       </>
     );
   }

@@ -1,6 +1,7 @@
 import { AddressResponse } from "./Address";
 import { BookResponse } from "./Book";
-import { VnPayResponse } from "./Payment";
+import { TransactionResponse } from "./Payment";
+import { UserResponse } from "./User";
 
 export interface OrderRequest {
   addressId: string;
@@ -9,8 +10,9 @@ export interface OrderRequest {
 
 export interface OrderResponse {
   id: string;
+  siteUser: UserResponse
   orderItems: OrderItemResponse[];
-  payment: VnPayResponse;
+  payment: TransactionResponse;
   totalAmount: number;
   orderStatus: string;
   shippingAddress: AddressResponse;
@@ -24,6 +26,16 @@ export interface OrderItemResponse {
   quantity: number;
   pricePerUnit: number;
   subtotal: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderPaymentResponse {
+  id: string;
+  orderItems: OrderItemResponse[];
+  totalAmount: number;
+  orderStatus: string;
+  shippingAddress: AddressResponse;
   createdAt: string;
   updatedAt: string;
 }

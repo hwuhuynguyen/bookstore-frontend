@@ -1,9 +1,9 @@
-import { OrderResponse } from "./Order";
+import { OrderPaymentResponse } from "./Order";
 
 export interface TransactionResponse {
   id: string;
   paymentType: string;
-  order: OrderResponse;
+  order: OrderPaymentResponse;
   transactionId: string;
   amount: number;
   paymentStatus: string;
