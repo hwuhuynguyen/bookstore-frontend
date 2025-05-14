@@ -6,39 +6,41 @@ import {
   Stack,
   Table,
   Text,
-  useMantineTheme,
 } from "@mantine/core";
 import { Link } from "react-router-dom";
+import ApplicationConstants from "../../constants/ApplicationConstants";
+import { OrderItemResponse } from "../../models/Order";
+import NumberUtils from "../../utils/NumberUtils";
 
-function OrderItemRow({
-  orderItem,
-}: {
-  orderItem: any;
+interface OrderItemRowProps {
+  orderItem: OrderItemResponse;
   canReview: boolean;
-}) {
-  const theme = useMantineTheme();
+}
 
+function OrderItemRow({ orderItem, canReview }: OrderItemRowProps) {
   return (
-    <Table.Tr key={orderItem.orderItemVariant}>
+    <Table.Tr key={orderItem.id}>
       <Table.Td>
         <Group gap="xs" style={{ flexWrap: "unset" }}>
           <Image
             radius="md"
-            style={{ height: "100%", maxWidth: '100px' }}
+            style={{ height: "100%", maxWidth: "100px" }}
             src={
-              orderItem.orderItemVariant ||
-              "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-8.png"
+              orderItem.book?.imageUrl ||
+              ApplicationConstants.DEFAULT_THUMBNAIL_URL
             }
-            alt={orderItem.orderItemVariant}
+            alt={orderItem.book?.title}
+            onError={(e) => {
+              e.currentTarget.src = ApplicationConstants.DEFAULT_THUMBNAIL_URL;
+            }}
           />
           <Stack gap={3.5}>
             <Anchor
               component={Link}
-              to={"/books/" + orderItem.orderItemVariant}
+              to={"/books/" + orderItem.book.slug}
               size="sm"
             >
-              {orderItem.orderItemVariant ||
-                "The Great Gatsby"}
+              {orderItem.book.title}
             </Anchor>
             {
               <Button
@@ -46,12 +48,8 @@ function OrderItemRow({
                 radius="md"
                 variant="outline"
                 style={{ width: "fit-content" }}
-                disabled={orderItem.orderItemVariant}
-                title={
-                  orderItem.orderItemVariant
-                    ? "Sản phẩm đã được bạn đánh giá"
-                    : ""
-                }
+                disabled={!canReview}
+                title={!canReview ? "This book has already been reviewed" : ""}
               >
                 Review
               </Button>
@@ -59,15 +57,17 @@ function OrderItemRow({
           </Stack>
         </Group>
       </Table.Td>
-      <Table.Td style={{textAlign: 'center'}}>
-        <Text size="sm">{"000000 ₫"}</Text>
+      <Table.Td style={{ textAlign: "center" }}>
+        <Text size="sm">
+          {NumberUtils.formatCurrency(orderItem.pricePerUnit)}
+        </Text>
       </Table.Td>
-      <Table.Td style={{textAlign: 'center'}}>
-        <Text size="sm">{orderItem.orderItemQuantity || 0}</Text>
+      <Table.Td style={{ textAlign: "center" }}>
+        <Text size="sm">{orderItem.quantity || 0}</Text>
       </Table.Td>
-      <Table.Td style={{textAlign: 'center'}}>
+      <Table.Td style={{ textAlign: "center" }}>
         <Text fw={500} size="sm" color="blue">
-          {"000000 ₫"}
+          {NumberUtils.formatCurrency(orderItem.subtotal)}
         </Text>
       </Table.Td>
     </Table.Tr>

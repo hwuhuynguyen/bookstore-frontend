@@ -1,6 +1,7 @@
 import { AddressResponse } from "./Address";
 import { BookResponse } from "./Book";
 import { TransactionResponse } from "./Payment";
+import { UserResponse } from "./User";
 
 export interface OrderRequest {
   addressId: string;
@@ -9,6 +10,7 @@ export interface OrderRequest {
 
 export interface OrderResponse {
   id: string;
+  siteUser: UserResponse
   orderItems: OrderItemResponse[];
   payment: TransactionResponse;
   totalAmount: number;

@@ -1,105 +1,75 @@
 import {
-  Badge,
   Button,
   Card,
   Container,
   Divider,
   Grid,
   Group,
-  Image,
   ScrollArea,
   Skeleton,
   Stack,
   Table,
   Text,
-  ThemeIcon,
   Title,
-  Tooltip,
+  useMantineTheme,
 } from "@mantine/core";
-import {
-  IconInfoCircle,
-  IconLock,
-  IconMail,
-  IconPhone,
-  IconUser,
-} from "@tabler/icons-react";
-import { Link } from "react-router-dom";
+import { IconAlertTriangle, IconHome2 } from "@tabler/icons-react";
+import { Link, useParams } from "react-router-dom";
 import UserNavbar from "../../components/UserNavbar";
-import { useState } from "react";
 import OrderItemRow from "../../components/OrderItemRow";
+import StatusUtils from "../../utils/StatusUtils";
+import { useQuery } from "@tanstack/react-query";
+import { OrderResponse } from "../../models/Order";
+import FetchUtils, { ErrorMessage } from "../../utils/FetchUtils";
+import ResourceURL from "../../constants/ResourceURL";
+import DateUtils from "../../utils/DateUtils";
+import ApplicationConstants from "../../constants/ApplicationConstants";
+import NumberUtils from "../../utils/NumberUtils";
 
 function ClientOrderDetailPage() {
+  const theme = useMantineTheme();
+  const { orderId } = useParams();
+
+  const {
+    data: orderResponse,
+    isLoading: isLoadingOrderResponse,
+    isError: isErrorOrderResponse,
+  } = useQuery<OrderResponse, ErrorMessage>({
+    queryKey: ["client-api", "getOrderDetail", orderId],
+    queryFn: () =>
+      FetchUtils.getWithToken(ResourceURL.CLIENT_ORDER + "/" + orderId),
+    refetchOnWindowFocus: false,
+  });
+
+  const order = orderResponse as OrderResponse;
+
   let orderContentFragment;
-  const [isLoading, setIsLoading] = useState(false);
-  // const [order, setOrder] = useState({})
-  const order = {
-    orderId: 1,
-    createdAt: "2025-04-22T10:00:00Z",
-    orderCode: "ORD-20250422-0001",
-    orderStatus: 2,
-    total: 150.75,
-    orderItems: [
-      {
-        id: 101,
-        title: "Wireless Mouse",
-        quantity: 2,
-        price: 25.0,
-      },
-      {
-        id: 102,
-        title: "Mechanical Keyboard",
-        quantity: 1,
-        price: 100.75,
-      },
-    ],
-    orderPaymentStatus: 1,
-  };
 
-  const orderStatusBadgeFragment = (status: number) => {
-    switch (status) {
-      case 1:
-        return (
-          <Badge color="gray" variant="filled" size="sm">
-            Pending
-          </Badge>
-        );
-      case 2:
-        return (
-          <Badge color="blue" variant="filled" size="sm">
-            Shipped
-          </Badge>
-        );
-      case 3:
-        return (
-          <Badge color="green" variant="filled" size="sm">
-            Delivered
-          </Badge>
-        );
-      case 4:
-        return (
-          <Badge color="red" variant="filled" size="sm">
-            Canceled
-          </Badge>
-        );
-    }
-  };
+  if (isLoadingOrderResponse) {
+    orderContentFragment = (
+      <Stack>
+        {Array(5)
+          .fill(0)
+          .map((_, index) => (
+            <Skeleton key={index} height={50} radius="md" />
+          ))}
+      </Stack>
+    );
+  }
 
-  const orderPaymentStatusBadgeFragment = (paymentStatus: number) => {
-    switch (paymentStatus) {
-      case 1:
-        return (
-          <Badge color="gray" variant="filled" size="sm">
-            Not paid
-          </Badge>
-        );
-      case 2:
-        return (
-          <Badge color="green" variant="filled" size="sm">
-            Paid
-          </Badge>
-        );
-    }
-  };
+  if (isErrorOrderResponse) {
+    orderContentFragment = (
+      <Stack
+        my={theme.spacing.xl}
+        style={{ alignItems: "center", color: theme.colors.pink[6] }}
+      >
+        <IconAlertTriangle size={125} strokeWidth={1} />
+        <Text size="xl" fw={500}>
+          Error occurred while fetching data
+        </Text>
+      </Stack>
+    );
+  }
 
   if (order) {
     orderContentFragment = (
@@ -107,12 +77,16 @@ function ClientOrderDetailPage() {
         <Card p="md" radius="md">
           <Group justify="space-between">
             <Stack gap={0}>
-              <Text fw={500}>Order ID: {order.orderCode}</Text>
-              <Text color="dimmed">Order date: {"22/04/2025"}</Text>
+              <Text fw={500}>Order ID: {order.id}</Text>
+              <Text color="dimmed">
+                Order date: {DateUtils.convertTimestampToUTC(order.createdAt)}
+              </Text>
             </Stack>
             <Group gap="xs">
-              {orderStatusBadgeFragment(order.orderStatus)}
-              {orderPaymentStatusBadgeFragment(order.orderPaymentStatus)}
+              {StatusUtils.orderStatusBadgeFragment(order.orderStatus)}
+              {StatusUtils.orderPaymentStatusBadgeFragment(
+                order.payment.paymentStatus
+              )}
             </Group>
           </Group>
         </Card>
@@ -126,10 +100,10 @@ function ClientOrderDetailPage() {
                 </Text>
                 <Stack gap={5}>
                   <Text size="sm" fw={500}>
-                    Nguyen Huu Huy
+                    {order.siteUser.firstName + " " + order.siteUser.lastName}
                   </Text>
-                  <Text size="sm">091.234.5678</Text>
-                  <Text size="sm">Da Nang, Vietnam</Text>
+                  <Text size="sm">{order.siteUser.phoneNumber}</Text>
+                  <Text size="sm">{order.shippingAddress.address}</Text>
                 </Stack>
               </Stack>
             </Card>
@@ -153,7 +127,7 @@ function ClientOrderDetailPage() {
                   Payment method
                 </Text>
                 <Group gap="xs">
-                  <Text size="sm">By cash</Text>
+                  <Text size="sm">{order.payment.paymentType}</Text>
                 </Group>
               </Stack>
             </Card>
@@ -170,17 +144,17 @@ function ClientOrderDetailPage() {
                       Product
                     </Text>
                   </Table.Th>
-                  <Table.Th style={{ minWidth: 125, textAlign: 'center'  }}>
+                  <Table.Th style={{ minWidth: 125, textAlign: "center" }}>
                     <Text fw="initial" size="sm" color="dimmed">
                       Unit price
                     </Text>
                   </Table.Th>
-                  <Table.Th style={{ minWidth: 150, textAlign: 'center' }}>
+                  <Table.Th style={{ minWidth: 150, textAlign: "center" }}>
                     <Text fw="initial" size="sm" color="dimmed">
                       Quantity
                     </Text>
                   </Table.Th>
-                  <Table.Th style={{ minWidth: 125, textAlign: 'center'  }}>
+                  <Table.Th style={{ minWidth: 125, textAlign: "center" }}>
                     <Text fw="initial" size="sm" color="dimmed">
                       Total
                     </Text>
@@ -193,7 +167,8 @@ function ClientOrderDetailPage() {
                     key={orderItem.id}
                     orderItem={orderItem}
                     canReview={
-                      order.orderStatus === 4 && order.orderPaymentStatus === 2
+                      order.orderStatus === "COMPLETED" &&
+                      order.payment.paymentStatus === "COMPLETED"
                     }
                   />
                 ))}
@@ -207,32 +182,6 @@ function ClientOrderDetailPage() {
           <Grid.Col span={{ sm: 5, md: 4, lg: 3 }}>
             <Stack gap="xs">
               <Group justify="space-between">
-                <Text size="sm" color="dimmed">
-                  Subtotal
-                </Text>
-                <Text size="sm" style={{ textAlign: "right" }}>
-                  {"000.000 VND"}
-                </Text>
-              </Group>
-              <Group justify="space-between">
-                <Text size="sm" color="dimmed">
-                  Tax (10%)
-                </Text>
-                <Text size="sm" style={{ textAlign: "right" }}>
-                  {"000.000 VND"}
-                </Text>
-              </Group>
-              <Group justify="space-between">
-                <Group gap="xs">
-                  <Text size="sm" color="dimmed">
-                    Shipping fee
-                  </Text>
-                </Group>
-                <Text size="sm" style={{ textAlign: "right" }}>
-                  {"000.000 VND"}
-                </Text>
-              </Group>
-              <Group justify="space-between">
                 <Text size="sm" fw={500}>
                   Total
                 </Text>
@@ -242,7 +191,7 @@ function ClientOrderDetailPage() {
                   color="blue"
                   style={{ textAlign: "right" }}
                 >
-                  {"000.000 VND"}
+                  {NumberUtils.formatCurrency(order.totalAmount)}
                 </Text>
               </Group>
             </Stack>
@@ -251,26 +200,30 @@ function ClientOrderDetailPage() {
 
         <Divider />
 
-        <Button
-          color="red"
-          radius="md"
-          style={{ width: "fit-content" }}
-          disabled={![1, 2].includes(order.orderStatus)}
-        >
-          Cancel order
-        </Button>
-      </Stack>
-    );
-  }
-
-  if (isLoading) {
-    orderContentFragment = (
-      <Stack>
-        {Array(5)
-          .fill(0)
-          .map((_, index) => (
-            <Skeleton key={index} height={50} radius="md" />
-          ))}
+        <Group justify="space-between">
+          <Button
+            component={Link}
+            to="/order"
+            variant="transparent"
+            size="sm"
+            leftSection={<IconHome2 size={18} />}
+          >
+            Back to Order page
+          </Button>
+          <Button
+            color="red"
+            variant="light"
+            radius="md"
+            style={{ width: "fit-content" }}
+            disabled={
+              !ApplicationConstants.CANCELABLE_STATUSES.includes(
+                order.orderStatus
+              )
+            }
+          >
+            Cancel order
+          </Button>
+        </Group>
       </Stack>
     );
   }
@@ -287,7 +240,6 @@ function ClientOrderDetailPage() {
             <Card radius="md" shadow="sm" p="lg">
               <Stack>
                 <Title order={2}>Order details</Title>
-
                 {orderContentFragment}
               </Stack>
             </Card>

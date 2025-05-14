@@ -38,6 +38,11 @@ class ApplicationConstants {
       label: "GoodReads",
     },
   ];
+  
+  static CANCELABLE_STATUSES = [
+    "PENDING",
+    "PROCESSING"
+  ]
 }
 
 export default ApplicationConstants;

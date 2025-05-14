@@ -1,6 +1,5 @@
 import {
   Anchor,
-  Badge,
   Button,
   Card,
   Divider,
@@ -16,62 +15,11 @@ import { OrderResponse } from "../../models/Order";
 import DateUtils from "../../utils/DateUtils";
 import ApplicationConstants from "../../constants/ApplicationConstants";
 import NumberUtils from "../../utils/NumberUtils";
+import StatusUtils from "../../utils/StatusUtils";
 
 function OrderCard({ order }: { order: OrderResponse }) {
   const theme = useMantineTheme();
   const colorTheme = useMantineColorScheme();
-
-  const orderStatusBadgeFragment = (status: string) => {
-    switch (status) {
-      case "PENDING":
-        return (
-          <Badge color="gray" variant="filled" size="sm">
-            Pending
-          </Badge>
-        );
-      case "PROCESSING":
-        return (
-          <Badge color="blue" variant="filled" size="sm">
-            Processing
-          </Badge>
-        );
-      case "COMPLETED":
-        return (
-          <Badge color="green" variant="filled" size="sm">
-            Comlpeted
-          </Badge>
-        );
-      case "CANCELED":
-        return (
-          <Badge color="red" variant="filled" size="sm">
-            Canceled
-          </Badge>
-        );
-    }
-  };
-
-  const orderPaymentStatusBadgeFragment = (paymentStatus: string) => {
-    switch (paymentStatus) {
-      case "PENDING":
-        return (
-          <Badge color="gray" variant="filled" size="sm">
-            Not paid
-          </Badge>
-        );
-      case "COMPLETED":
-        return (
-          <Badge color="green" variant="filled" size="sm">
-            Completed
-          </Badge>
-        );
-      case "FAILED":
-        return (
-          <Badge color="red" variant="filled" size="sm">
-            FAILED
-          </Badge>
-        );
-    }
-  };
 
   return (
     <Card
@@ -93,8 +41,10 @@ function OrderCard({ order }: { order: OrderResponse }) {
             </Text>
           </Stack>
           <Group gap="xs">
-            {orderStatusBadgeFragment(order.orderStatus)}
-            {orderPaymentStatusBadgeFragment(order.payment.paymentStatus)}
+            {StatusUtils.orderStatusBadgeFragment(order.orderStatus)}
+            {StatusUtils.orderPaymentStatusBadgeFragment(
+              order.payment.paymentStatus
+            )}
           </Group>
         </Group>
 
