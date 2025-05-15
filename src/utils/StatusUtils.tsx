@@ -64,6 +64,29 @@ class StatusUtils {
         );
     }
   };
+
+  static roleBadgeFragment = (role: string) => {
+    switch (role.toLowerCase()) {
+      case "admin":
+        return (
+          <Badge color="red" variant="filled">
+            Admin
+          </Badge>
+        );
+      case "user":
+        return (
+          <Badge color="indigo" variant="filled">
+            Customer
+          </Badge>
+        );
+      default:
+        return (
+          <Badge color="gray" variant="filled">
+            Unknown
+          </Badge>
+        );
+    }
+  };
 }
 
 export default StatusUtils;

@@ -19,5 +19,10 @@ export interface UserResponse extends BaseResponse {
   phoneNumber: string;
   addresses: AddressResponse[];
   avatar: string | null;
-  roles: any[];
+  roles: RoleResponse[];
+}
+
+export interface RoleResponse {
+  code: string;
+  name: string;
 }
