@@ -23,11 +23,13 @@ class ResourceURL {
   static CLIENT_CHECKOUT = this.CLIENT_ORDER + "/checkout";
   static CLIENT_GET_MY_ORDERS = this.CLIENT_ORDER + "/my-orders";
 
+  static AUTHOR_BASE = apiPath + "/authors"
   static CLIENT_PAYMENT_VNPAY_RETURN = apiPath + "/payment/vnpay-return";
 
   // --- ADMIN ROUTE ---
   static ADMIN_GET_ALL_ORDERS = this.CLIENT_ORDER + "/all-orders";
   static ADMIN_GET_ALL_USERS = this.USER_BASE + "/all";
+  static ADMIN_GET_ALL_AUTHORS = this.AUTHOR_BASE + "/all";
 }
 
 export default ResourceURL;
