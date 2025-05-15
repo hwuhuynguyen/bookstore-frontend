@@ -1,129 +1,189 @@
 import {
-  Container,
   Title,
   Table,
   Group,
-  Badge,
   ActionIcon,
-  Switch,
   TextInput,
   Button,
   Modal,
-  Select,
-  PasswordInput,
   Card,
   Stack,
   Pagination,
   Text,
+  useMantineTheme,
+  Skeleton,
+  Tooltip,
 } from "@mantine/core";
 import { useState } from "react";
 import {
-  IconPencil,
-  IconTrash,
   IconSearch,
   IconPlus,
-  IconInfoCircle,
+  IconAlertTriangle,
+  IconEdit,
+  IconEye,
 } from "@tabler/icons-react";
+import FetchUtils, { ErrorMessage, ListResponse } from "../../utils/FetchUtils";
+import { UserResponse } from "../../models/User";
+import { useQuery } from "@tanstack/react-query";
+import ResourceURL from "../../constants/ResourceURL";
+import DateUtils from "../../utils/DateUtils";
+import StatusUtils from "../../utils/StatusUtils";
 
 const AdminUserPage = () => {
+  const theme = useMantineTheme();
   const [searchQuery, setSearchQuery] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState<any>(null);
-  const [activePage, setActivePage] = useState(0);
+  const [activePage, setActivePage] = useState(1);
+  const [viewUpdateModal, setViewUpdateModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null); // Selected user for update
+  const [modalMode, setModalMode] = useState<"view" | "edit">("view");
 
-  // Mock users data
-  const users = [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      role: "admin",
-      active: true,
-      orders: 12,
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane@example.com",
-      role: "customer",
-      active: true,
-      orders: 5,
-    },
-    {
-      id: 3,
-      name: "Robert Johnson",
-      email: "robert@example.com",
-      role: "customer",
-      active: true,
-      orders: 8,
-    },
-    {
-      id: 4,
-      name: "Sarah Williams",
-      email: "sarah@example.com",
-      role: "customer",
-      active: false,
-      orders: 0,
-    },
-    {
-      id: 5,
-      name: "Michael Brown",
-      email: "michael@example.com",
-      role: "customer",
-      active: true,
-      orders: 3,
-    },
-  ];
-
-  // Filter users based on search
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleEditUser = (user: any) => {
-    setEditingUser({ ...user });
-    setModalOpen(true);
+  const requestParams = {
+    size: 10,
+    page: activePage - 1,
   };
 
-  const handleAddNewUser = () => {
-    setEditingUser({
-      id: null,
-      name: "",
-      email: "",
-      role: "customer",
-      active: true,
-      password: "",
-    });
-    setModalOpen(true);
-  };
+  const {
+    data: userResponses,
+    isLoading: isLoadingUserResponses,
+    isError: isErrorUserResponses,
+  } = useQuery<ListResponse<UserResponse>, ErrorMessage>({
+    queryKey: ["client-api", "users", "getAllUsers", requestParams],
+    queryFn: () =>
+      FetchUtils.getWithToken<ListResponse<UserResponse>>(
+        ResourceURL.ADMIN_GET_ALL_USERS,
+        requestParams,
+        true
+      ),
+    refetchOnWindowFocus: false,
+  });
 
-  const handleSaveUser = () => {
-    // Save user logic would go here
-    alert(editingUser.id ? "User updated" : "User added");
-    setModalOpen(false);
-  };
+  const users = userResponses as ListResponse<UserResponse>;
 
-  const handleDeleteUser = (userId: number) => {
-    // Delete user logic would go here
-    alert(`User ${userId} deleted`);
-  };
+  let usersContentFragment;
 
-  const handleToggleActive = (userId: number, currentActive: boolean) => {
-    // Toggle active status logic would go here
-    alert(`User ${userId} ${currentActive ? "deactivated" : "activated"}`);
-  };
+  if (isLoadingUserResponses) {
+    usersContentFragment = (
+      <Stack>
+        {Array(10)
+          .fill(0)
+          .map((_, index) => (
+            <Skeleton key={index} height={50} radius="md" />
+          ))}
+      </Stack>
+    );
+  }
+
+  if (isErrorUserResponses) {
+    usersContentFragment = (
+      <Stack
+        my={theme.spacing.xl}
+        style={{ alignItems: "center", color: theme.colors.pink[6] }}
+      >
+        <IconAlertTriangle size={125} strokeWidth={1} />
+        <Text size="xl" fw={500}>
+          Error occurred while fetching data
+        </Text>
+      </Stack>
+    );
+  }
+  if (users) {
+    usersContentFragment = (
+      <>
+        <Table striped>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th style={{ width: "4%" }}>No.</Table.Th>
+              <Table.Th style={{ width: "10%" }}>User ID</Table.Th>
+              <Table.Th style={{ width: "18%" }}>Name</Table.Th>
+              <Table.Th style={{ width: "10%" }}>Username</Table.Th>
+              <Table.Th style={{ width: "14%" }}>Email</Table.Th>
+              <Table.Th style={{ width: "12%" }}>Phone number</Table.Th>
+              <Table.Th style={{ width: "14%" }}>Created at</Table.Th>
+              <Table.Th style={{ width: "8%", textAlign: "center" }}>Role</Table.Th>
+              <Table.Th style={{ width: "10%", textAlign: "center" }}>
+                Actions
+              </Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {users?.data.map((user, index) => (
+              <Table.Tr key={user.id}>
+                <Table.Td>
+                  {(activePage - 1) * requestParams.size + index + 1}
+                </Table.Td>
+                <Table.Td>{user.id}</Table.Td>
+                <Table.Td>{user.firstName + " " + user.lastName}</Table.Td>
+                <Table.Td>{user.username}</Table.Td>
+                <Table.Td>{user.email}</Table.Td>
+                <Table.Td>{user.phoneNumber}</Table.Td>
+                <Table.Td>
+                  {DateUtils.convertTimestampToUTC(user.createdAt)}
+                </Table.Td>
+                <Table.Td style={{ textAlign: "center" }}>
+                  {user.roles.map((role) =>
+                    StatusUtils.roleBadgeFragment(role.code)
+                  )}
+                </Table.Td>
+                <Table.Td>
+                  <Group gap="xs" justify="flex-start">
+                    <Tooltip label="View details">
+                      <ActionIcon
+                        variant="subtle"
+                        radius={"md"}
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setModalMode("view");
+                          setViewUpdateModal(true);
+                        }}
+                      >
+                        <IconEye size={16} />
+                      </ActionIcon>
+                    </Tooltip>
+                    <Tooltip label="Update user details">
+                      <ActionIcon
+                        variant="subtle"
+                        radius={"md"}
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setModalMode("edit");
+                          setViewUpdateModal(true);
+                        }}
+                      >
+                        <IconEdit size={16} />
+                      </ActionIcon>
+                    </Tooltip>
+                  </Group>
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+        <Group justify="space-between" mt={"lg"}>
+          <Pagination
+            value={activePage}
+            total={users?.totalPages}
+            onChange={(page: number) =>
+              page !== activePage && setActivePage(page)
+            }
+          />
+          <Text>
+            <Text component="span" size="sm">
+              Page {activePage}/{users?.totalPages}
+            </Text>
+          </Text>
+        </Group>
+      </>
+    );
+  }
 
   return (
-    <Container size="xl">
+    <>
       <Card radius="md" shadow="lg" p="lg" mb="md" withBorder>
         <Stack>
           <Group justify="space-between">
             <Title order={2}>User Management</Title>
             <Button
               leftSection={<IconPlus size={16} />}
-              onClick={handleAddNewUser}
               color="blue"
               radius="md"
             >
@@ -141,158 +201,81 @@ const AdminUserPage = () => {
       </Card>
 
       <Card radius="md" shadow="lg" p="lg" mb="md" withBorder>
-        <Table>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Name</Table.Th>
-              <Table.Th>Email</Table.Th>
-              <Table.Th>Role</Table.Th>
-              <Table.Th>Orders</Table.Th>
-              <Table.Th>Status</Table.Th>
-              <Table.Th style={{ textAlign: "center" }}>Actions</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {filteredUsers.map((user) => (
-              <Table.Tr key={user.id}>
-                <Table.Td>{user.name}</Table.Td>
-                <Table.Td>{user.email}</Table.Td>
-                <Table.Td>
-                  <Badge color={user.role === "admin" ? "blue" : "green"}>
-                    {user.role}
-                  </Badge>
-                </Table.Td>
-                <Table.Td>{user.orders}</Table.Td>
-                <Table.Td>
-                  <Switch
-                    checked={user.active}
-                    onChange={() => handleToggleActive(user.id, user.active)}
-                  />
-                </Table.Td>
-                <Table.Td>
-                  <Group gap="xs" justify="center">
-                    <ActionIcon
-                      variant="subtle"
-                      color="green"
-                      onClick={() => handleEditUser(user)}
-                      radius={"md"}
-                    >
-                      <IconInfoCircle size={16} />
-                    </ActionIcon>
-                    <ActionIcon
-                      variant="subtle"
-                      onClick={() => handleEditUser(user)}
-                      radius={"md"}
-                    >
-                      <IconPencil size={16} />
-                    </ActionIcon>
-                    <ActionIcon
-                      variant="subtle"
-                      color="red"
-                      onClick={() => handleDeleteUser(user.id)}
-                      radius={"md"}
-                    >
-                      <IconTrash size={16} />
-                    </ActionIcon>
-                  </Group>
-                </Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-        <Group justify="space-between" mt={"lg"}>
-          <Pagination
-            total={100}
-            onChange={(page: number) =>
-              page !== activePage && setActivePage(page)
-            }
-          />
-          <Text>
-            <Text component="span" size="sm">
-              Page {activePage}/{100}
-            </Text>
-          </Text>
-        </Group>
+        {usersContentFragment}
       </Card>
 
-      {/* User Edit/Add Modal */}
       <Modal
-        opened={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={editingUser?.id ? "Edit User" : "Add New User"}
-        size="md"
-      >
-        {editingUser && (
-          <div>
-            <TextInput
-              label="Name"
-              placeholder="Full name"
-              value={editingUser.name}
-              onChange={(e) =>
-                setEditingUser({ ...editingUser, name: e.target.value })
-              }
-              mb="md"
-              required
-            />
+  opened={viewUpdateModal}
+  onClose={() => setViewUpdateModal(false)}
+  title={<Title order={3}>USER INFORMATION</Title>}
+  size="lg"
+  radius="md"
+  closeOnClickOutside={false}
+>
+  {selectedUser ? (
+    <Stack>
+      <TextInput label="User ID" value={selectedUser.id} disabled />
 
-            <TextInput
-              label="Email"
-              placeholder="Email address"
-              value={editingUser.email}
-              onChange={(e) =>
-                setEditingUser({ ...editingUser, email: e.target.value })
-              }
-              mb="md"
-              required
-            />
+      <TextInput
+        label="Full Name"
+        value={selectedUser.firstName + " " + selectedUser.lastName}
+        disabled
+      />
 
-            {!editingUser.id && (
-              <PasswordInput
-                label="Password"
-                placeholder="Set password"
-                value={editingUser.password || ""}
-                onChange={(e) =>
-                  setEditingUser({ ...editingUser, password: e.target.value })
-                }
-                mb="md"
-                required
-              />
-            )}
+      <TextInput label="Username" value={selectedUser.username} disabled />
 
-            <Select
-              label="Role"
-              placeholder="Select role"
-              value={editingUser.role}
-              onChange={(value) =>
-                setEditingUser({ ...editingUser, role: value })
-              }
-              data={[
-                { value: "admin", label: "Admin" },
-                { value: "customer", label: "Customer" },
-              ]}
-              mb="md"
-              required
-            />
+      <TextInput
+        label="Email"
+        value={selectedUser.email}
+        onChange={(e) =>
+          setSelectedUser({ ...selectedUser, email: e.target.value })
+        }
+        disabled={modalMode === "view"}
+      />
 
-            <Switch
-              label="Active"
-              checked={editingUser.active}
-              onChange={(e) =>
-                setEditingUser({ ...editingUser, active: e.target.checked })
-              }
-              mb="md"
-            />
+      <TextInput
+        label="Phone Number"
+        value={selectedUser.phoneNumber}
+        onChange={(e) =>
+          setSelectedUser({ ...selectedUser, phoneNumber: e.target.value })
+        }
+        disabled={modalMode === "view"}
+      />
 
-            <Group justify="flex-end" mt="xl">
-              <Button variant="outline" onClick={() => setModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleSaveUser}>Save</Button>
-            </Group>
-          </div>
-        )}
-      </Modal>
-    </Container>
+      <TextInput
+        label="Role"
+        value={selectedUser.roles.map((r) => r.code).join(", ")}
+        disabled
+      />
+
+      <TextInput
+        label="Created At"
+        value={DateUtils.convertTimestampToUTC(selectedUser.createdAt)}
+        disabled
+      />
+
+      {modalMode === "edit" && (
+        <Group justify="center" mt="md">
+          <Button
+            color="green"
+            size="md"
+            radius="md"
+            onClick={() => {
+              // Save logic here
+              setViewUpdateModal(false);
+            }}
+          >
+            Save Changes
+          </Button>
+        </Group>
+      )}
+    </Stack>
+  ) : (
+    <Text>No user selected.</Text>
+  )}
+</Modal>
+
+    </>
   );
 };
 

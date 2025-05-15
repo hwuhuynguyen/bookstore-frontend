@@ -9,7 +9,8 @@ class ResourceURL {
   static REGISTER = apiPath + "/auth/register";
   static REGENERATE_TOKEN = apiPath + "/auth/regenerate-token";
 
-  static CLIENT_USER_INFO = apiPath + "/users/personal-info";
+  static USER_BASE = apiPath + "/users";
+  static CLIENT_USER_INFO = this.USER_BASE + "/personal-info";
   static CLIENT_USER_ADDRESS = this.CLIENT_USER_INFO + "/address";
 
   static CLIENT_BOOK = apiPath + "/books";
@@ -18,14 +19,13 @@ class ResourceURL {
 
   static CLIENT_ORDER = apiPath + "/orders";
   static CLIENT_CHECKOUT = this.CLIENT_ORDER + "/checkout";
-  static CLIENT_GET_MY_ORDERS = this.CLIENT_ORDER + "/my-orders"
-  
+  static CLIENT_GET_MY_ORDERS = this.CLIENT_ORDER + "/my-orders";
+
   static CLIENT_PAYMENT_VNPAY_RETURN = apiPath + "/payment/vnpay-return";
-  
 
   // --- ADMIN ROUTE ---
-  static ADMIN_GET_ALL_ORDERS = this.CLIENT_ORDER + "/all-orders"
-
+  static ADMIN_GET_ALL_ORDERS = this.CLIENT_ORDER + "/all-orders";
+  static ADMIN_GET_ALL_USERS = this.USER_BASE + "/all";
 }
 
 export default ResourceURL;
