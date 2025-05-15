@@ -34,6 +34,8 @@ import { MOCK_REVIEW_DATA } from "../../data/reviews";
 import { AddToCartRequest, CartResponse } from "../../models/Cart";
 import useAuthStore from "../../stores/AuthStore";
 import NotifyUtils from "../../utils/NotifyUtils";
+import ClientRelatedBooks from "./ClientRelatedBooks";
+import DateUtils from "../../utils/DateUtils";
 
 export default function ClientBookDetailPage() {
   const theme = useMantineTheme();
@@ -160,7 +162,7 @@ export default function ClientBookDetailPage() {
                 <Text size="xs" c="dimmed">
                   Publication year
                 </Text>
-                <Text>{book?.publicationDate || "N/A"}</Text>
+                <Text>{DateUtils.convertTimestampToDate(book?.publicationDate) || "N/A"}</Text>
               </Box>
             </Group>
 
@@ -449,7 +451,7 @@ export default function ClientBookDetailPage() {
             </Paper>
           </Grid.Col>
         </Grid>
-        {/* <BookCarousel /> */}
+        <ClientRelatedBooks book={book}/>
       </Stack>
     </Container>
   );
