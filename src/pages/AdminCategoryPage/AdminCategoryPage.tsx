@@ -48,7 +48,7 @@ const AdminCategoryPage = () => {
     isLoading: isLoadingCategoryResponses,
     isError: isErrorCategoryResponses,
   } = useQuery<ListResponse<CategoryResponse>, ErrorMessage>({
-    queryKey: ["client-api", "users", "getAllUsers", requestParams],
+    queryKey: ["client-api", "categories", "getAllCategories", requestParams],
     queryFn: () =>
       FetchUtils.get<ListResponse<CategoryResponse>>(
         ResourceURL.CLIENT_CATEGORY,

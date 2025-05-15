@@ -1,5 +1,4 @@
 import {
-  Container,
   Title,
   Table,
   Group,
@@ -11,70 +10,173 @@ import {
   Stack,
   Pagination,
   Text,
+  useMantineTheme,
+  Skeleton,
+  Tooltip,
 } from "@mantine/core";
 import { useState } from "react";
 import {
-  IconPencil,
-  IconTrash,
   IconPlus,
   IconSearch,
-  IconInfoCircle,
+  IconAlertTriangle,
+  IconEye,
+  IconEdit,
 } from "@tabler/icons-react";
-
+import FetchUtils, { ErrorMessage, ListResponse } from "../../utils/FetchUtils";
+import { useQuery } from "@tanstack/react-query";
+import ResourceURL from "../../constants/ResourceURL";
+import DateUtils from "../../utils/DateUtils";
+import { AuthorResponse } from "../../models/Author";
 const AdminAuthorPage = () => {
+  const theme = useMantineTheme();
   const [searchQuery, setSearchQuery] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingAuthor, setEditingAuthor] = useState<any>(null);
-  const [activePage, setActivePage] = useState(0);
+  const [activePage, setActivePage] = useState(1);
 
-  // Mock authors data
-  const authors = [
-    { id: 1, name: "J.K. Rowling", bookCount: 7 },
-    { id: 2, name: "George R.R. Martin", bookCount: 5 },
-    { id: 3, name: "Isaac Asimov", bookCount: 50 },
-    { id: 4, name: "Agatha Christie", bookCount: 66 },
-    { id: 5, name: "Stephen King", bookCount: 63 },
-    { id: 6, name: "Yuval Noah Harari", bookCount: 3 },
-    { id: 7, name: "Haruki Murakami", bookCount: 12 },
-    { id: 8, name: "Dan Brown", bookCount: 6 },
-  ];
+  const [viewUpdateModal, setViewUpdateModal] = useState(false);
+  const [selectedAuthor, setSelectedAuthor] = useState<AuthorResponse | null>(
+    null
+  ); // Selected author for update
+  const [modalMode, setModalMode] = useState<"view" | "edit">("view");
 
-  const filteredAuthors = authors.filter((author) =>
-    author.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleEditAuthor = (author: any) => {
-    setEditingAuthor({ ...author });
-    setModalOpen(true);
+  const requestParams = {
+    size: 10,
+    page: activePage - 1,
+    sort: "name,asc",
   };
 
-  const handleAddNewAuthor = () => {
-    setEditingAuthor({
-      id: null,
-      name: "",
-      bookCount: 0,
-    });
-    setModalOpen(true);
-  };
+  const {
+    data: authorResponses,
+    isLoading: isLoadingAuthorResponses,
+    isError: isErrorAuthorResponses,
+  } = useQuery<ListResponse<AuthorResponse>, ErrorMessage>({
+    queryKey: ["client-api", "authors", "getAllAuthors", requestParams],
+    queryFn: () =>
+      FetchUtils.getWithToken<ListResponse<AuthorResponse>>(
+        ResourceURL.ADMIN_GET_ALL_AUTHORS,
+        requestParams,
+        true
+      ),
+    refetchOnWindowFocus: false,
+  });
 
-  const handleSaveAuthor = () => {
-    alert(editingAuthor.id ? "Author updated" : "Author added");
-    setModalOpen(false);
-  };
+  const authors = authorResponses as ListResponse<AuthorResponse>;
+  let authorsContentFragment;
 
-  const handleDeleteAuthor = (authorId: number) => {
-    alert(`Author ${authorId} deleted`);
-  };
+  if (isLoadingAuthorResponses) {
+    authorsContentFragment = (
+      <Stack>
+        {Array(10)
+          .fill(0)
+          .map((_, index) => (
+            <Skeleton key={index} height={50} radius="md" />
+          ))}
+      </Stack>
+    );
+  }
+
+  if (isErrorAuthorResponses) {
+    authorsContentFragment = (
+      <Stack
+        my={theme.spacing.xl}
+        style={{ alignItems: "center", color: theme.colors.pink[6] }}
+      >
+        <IconAlertTriangle size={125} strokeWidth={1} />
+        <Text size="xl" fw={500}>
+          Error occurred while fetching data
+        </Text>
+      </Stack>
+    );
+  }
+  if (authors) {
+    authorsContentFragment = (
+      <>
+        <Table striped>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th style={{ width: "5%" }}>No.</Table.Th>
+              <Table.Th style={{ width: "25%" }}>Author ID</Table.Th>
+              <Table.Th style={{ width: "25%" }}>Name</Table.Th>
+              <Table.Th style={{ width: "15%" }}>Created at</Table.Th>
+              <Table.Th style={{ width: "15%" }}>Updated at</Table.Th>
+              <Table.Th style={{ width: "15%", textAlign: "center" }}>
+                Actions
+              </Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {authors?.data.map((author, index) => (
+              <Table.Tr key={author.id}>
+                <Table.Td>
+                  {(activePage - 1) * requestParams.size + index + 1}
+                </Table.Td>
+                <Table.Td>{author.id}</Table.Td>
+                <Table.Td>{author.name}</Table.Td>
+                <Table.Td>
+                  {DateUtils.convertTimestampToUTC(author.createdAt)}
+                </Table.Td>
+                <Table.Td>
+                  {DateUtils.convertTimestampToUTC(author.updatedAt)}
+                </Table.Td>
+                <Table.Td>
+                  <Group gap="xs" justify="center">
+                    <Tooltip label="View details">
+                      <ActionIcon
+                        variant="subtle"
+                        radius={"md"}
+                        onClick={() => {
+                          setSelectedAuthor(author);
+                          setModalMode("view");
+                          setViewUpdateModal(true);
+                        }}
+                      >
+                        <IconEye size={16} />
+                      </ActionIcon>
+                    </Tooltip>
+                    <Tooltip label="Update author details">
+                      <ActionIcon
+                        variant="subtle"
+                        radius={"md"}
+                        onClick={() => {
+                          setSelectedAuthor(author);
+                          setModalMode("edit");
+                          setViewUpdateModal(true);
+                        }}
+                      >
+                        <IconEdit size={16} />
+                      </ActionIcon>
+                    </Tooltip>
+                  </Group>
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+        <Group justify="space-between" mt={"lg"}>
+          <Pagination
+            value={activePage}
+            total={authors?.totalPages}
+            onChange={(page: number) =>
+              page !== activePage && setActivePage(page)
+            }
+          />
+          <Text>
+            <Text component="span" size="sm">
+              Page {activePage}/{authors?.totalPages}
+            </Text>
+          </Text>
+        </Group>
+      </>
+    );
+  }
 
   return (
-    <Container size="xl">
+    <>
       <Card radius="md" shadow="lg" p="lg" mb="md" withBorder>
         <Stack>
           <Group justify="space-between">
             <Title order={2}>Author Management</Title>
             <Button
               leftSection={<IconPlus size={16} />}
-              onClick={handleAddNewAuthor}
               color="blue"
               radius="md"
             >
@@ -92,93 +194,60 @@ const AdminAuthorPage = () => {
       </Card>
 
       <Card radius="md" shadow="lg" p="lg" mb="md" withBorder>
-        <Table>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Name</Table.Th>
-              <Table.Th>Number of books</Table.Th>
-              <Table.Th style={{ textAlign: "center" }}>Actions</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {filteredAuthors.map((author) => (
-              <Table.Tr key={author.id}>
-                <Table.Td>{author.name}</Table.Td>
-                <Table.Td>{author.bookCount}</Table.Td>
-                <Table.Td>
-                  <Group gap="xs" justify="center">
-                    <ActionIcon
-                      variant="subtle"
-                      color="green"
-                      onClick={() => handleEditAuthor(author)}
-                      radius={"md"}
-                    >
-                      <IconInfoCircle size={16} />
-                    </ActionIcon>
-                    <ActionIcon
-                      variant="subtle"
-                      onClick={() => handleEditAuthor(author)}
-                      radius={"md"}
-                    >
-                      <IconPencil size={16} />
-                    </ActionIcon>
-                    <ActionIcon
-                      variant="subtle"
-                      color="red"
-                      onClick={() => handleDeleteAuthor(author.id)}
-                      radius={"md"}
-                    >
-                      <IconTrash size={16} />
-                    </ActionIcon>
-                  </Group>
-                </Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-        <Group justify="space-between" mt={"lg"}>
-          <Pagination
-            total={100}
-            onChange={(page: number) =>
-              page !== activePage && setActivePage(page)
-            }
-          />
-          <Text>
-            <Text component="span" size="sm">
-              Page {activePage}/{100}
-            </Text>
-          </Text>
-        </Group>
+        {authorsContentFragment}
       </Card>
 
       <Modal
-        opened={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={editingAuthor?.id ? "Edit Author" : "Add New Author"}
+        opened={viewUpdateModal}
+        onClose={() => setViewUpdateModal(false)}
+        title={<Title order={3}>AUTHOR INFORMATION</Title>}
+        size="lg"
+        radius="md"
+        closeOnClickOutside={false}
       >
-        {editingAuthor && (
-          <div>
+        {selectedAuthor ? (
+          <Stack>
+            <TextInput label="Author ID" value={selectedAuthor.id} disabled />
+
             <TextInput
               label="Author Name"
-              placeholder="Author name"
-              value={editingAuthor.name}
+              value={selectedAuthor.name}
               onChange={(e) =>
-                setEditingAuthor({ ...editingAuthor, name: e.target.value })
+                setSelectedAuthor({
+                  ...selectedAuthor,
+                  name: e.target.value,
+                })
               }
-              mb="md"
-              required
+              disabled={modalMode === "view"}
             />
 
-            <Group justify="flex-end" mt="xl">
-              <Button variant="outline" onClick={() => setModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleSaveAuthor}>Save</Button>
-            </Group>
-          </div>
+            <TextInput
+              label="Created At"
+              value={DateUtils.convertTimestampToUTC(selectedAuthor.createdAt)}
+              disabled
+            />
+
+            {modalMode === "edit" && (
+              <Group justify="center" mt="md">
+                <Button
+                  color="green"
+                  size="md"
+                  radius="md"
+                  onClick={() => {
+                    // Save logic here
+                    setViewUpdateModal(false);
+                  }}
+                >
+                  Save Changes
+                </Button>
+              </Group>
+            )}
+          </Stack>
+        ) : (
+          <Text>No author selected.</Text>
         )}
       </Modal>
-    </Container>
+    </>
   );
 };
 
