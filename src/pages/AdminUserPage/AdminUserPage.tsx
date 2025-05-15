@@ -93,20 +93,23 @@ const AdminUserPage = () => {
           <Table.Thead>
             <Table.Tr>
               <Table.Th style={{ width: "4%" }}>No.</Table.Th>
-              <Table.Th style={{ width: "10%" }}>User ID</Table.Th>
-              <Table.Th style={{ width: "18%" }}>Name</Table.Th>
-              <Table.Th style={{ width: "10%" }}>Username</Table.Th>
-              <Table.Th style={{ width: "14%" }}>Email</Table.Th>
-              <Table.Th style={{ width: "12%" }}>Phone number</Table.Th>
-              <Table.Th style={{ width: "14%" }}>Created at</Table.Th>
-              <Table.Th style={{ width: "8%", textAlign: "center" }}>Role</Table.Th>
+              <Table.Th style={{ width: "9%" }}>User ID</Table.Th>
+              <Table.Th style={{ width: "15%" }}>Name</Table.Th>
+              <Table.Th style={{ width: "9%" }}>Username</Table.Th>
+              <Table.Th style={{ width: "13%" }}>Email</Table.Th>
+              <Table.Th style={{ width: "11%" }}>Phone number</Table.Th>
+              <Table.Th style={{ width: "11%" }}>Created at</Table.Th>
+              <Table.Th style={{ width: "11%" }}>Updated at</Table.Th>
               <Table.Th style={{ width: "10%", textAlign: "center" }}>
+                Role
+              </Table.Th>
+              <Table.Th style={{ width: "7%", textAlign: "center" }}>
                 Actions
               </Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {users?.data.map((user, index) => (
+            {users?.data?.map((user, index) => (
               <Table.Tr key={user.id}>
                 <Table.Td>
                   {(activePage - 1) * requestParams.size + index + 1}
@@ -119,8 +122,11 @@ const AdminUserPage = () => {
                 <Table.Td>
                   {DateUtils.convertTimestampToUTC(user.createdAt)}
                 </Table.Td>
+                <Table.Td>
+                  {DateUtils.convertTimestampToUTC(user.updatedAt)}
+                </Table.Td>
                 <Table.Td style={{ textAlign: "center" }}>
-                  {user.roles.map((role) =>
+                  {user?.roles?.map((role) =>
                     StatusUtils.roleBadgeFragment(role.code)
                   )}
                 </Table.Td>
@@ -205,76 +211,82 @@ const AdminUserPage = () => {
       </Card>
 
       <Modal
-  opened={viewUpdateModal}
-  onClose={() => setViewUpdateModal(false)}
-  title={<Title order={3}>USER INFORMATION</Title>}
-  size="lg"
-  radius="md"
-  closeOnClickOutside={false}
->
-  {selectedUser ? (
-    <Stack>
-      <TextInput label="User ID" value={selectedUser.id} disabled />
+        opened={viewUpdateModal}
+        onClose={() => setViewUpdateModal(false)}
+        title={<Title order={3}>USER INFORMATION</Title>}
+        size="lg"
+        radius="md"
+        closeOnClickOutside={false}
+      >
+        {selectedUser ? (
+          <Stack>
+            <TextInput label="User ID" value={selectedUser.id} disabled />
 
-      <TextInput
-        label="Full Name"
-        value={selectedUser.firstName + " " + selectedUser.lastName}
-        disabled
-      />
+            <TextInput
+              label="Full Name"
+              value={selectedUser.firstName + " " + selectedUser.lastName}
+              disabled
+            />
 
-      <TextInput label="Username" value={selectedUser.username} disabled />
+            <TextInput
+              label="Username"
+              value={selectedUser.username}
+              disabled
+            />
 
-      <TextInput
-        label="Email"
-        value={selectedUser.email}
-        onChange={(e) =>
-          setSelectedUser({ ...selectedUser, email: e.target.value })
-        }
-        disabled={modalMode === "view"}
-      />
+            <TextInput
+              label="Email"
+              value={selectedUser.email}
+              onChange={(e) =>
+                setSelectedUser({ ...selectedUser, email: e.target.value })
+              }
+              disabled={modalMode === "view"}
+            />
 
-      <TextInput
-        label="Phone Number"
-        value={selectedUser.phoneNumber}
-        onChange={(e) =>
-          setSelectedUser({ ...selectedUser, phoneNumber: e.target.value })
-        }
-        disabled={modalMode === "view"}
-      />
+            <TextInput
+              label="Phone Number"
+              value={selectedUser.phoneNumber}
+              onChange={(e) =>
+                setSelectedUser({
+                  ...selectedUser,
+                  phoneNumber: e.target.value,
+                })
+              }
+              disabled={modalMode === "view"}
+            />
 
-      <TextInput
-        label="Role"
-        value={selectedUser.roles.map((r) => r.code).join(", ")}
-        disabled
-      />
+            <TextInput
+              label="Role"
+              value={selectedUser?.roles?.map((r) => r.code).join(", ")}
+              disabled
+            />
 
-      <TextInput
-        label="Created At"
-        value={DateUtils.convertTimestampToUTC(selectedUser.createdAt)}
-        disabled
-      />
+            <TextInput
+              label="Created At"
+              value={DateUtils.convertTimestampToUTC(selectedUser.createdAt)}
+              disabled
+            />
 
-      {modalMode === "edit" && (
-        <Group justify="center" mt="md">
-          <Button
-            color="green"
-            size="md"
-            radius="md"
-            onClick={() => {
-              // Save logic here
-              setViewUpdateModal(false);
-            }}
-          >
-            Save Changes
-          </Button>
-        </Group>
-      )}
-    </Stack>
-  ) : (
-    <Text>No user selected.</Text>
-  )}
-</Modal>
-
+            {modalMode === "edit" && (
+              <Group justify="center" mt="md">
+                <Button
+                  color="green"
+                  size="md"
+                  radius="md"
+                  onClick={() => {
+                    // Save logic here
+                    setViewUpdateModal(false);
+                  }}
+                >
+                  Save Changes
+                </Button>
+              </Group>
+            )}
+          </Stack>
+        ) : (
+          <Text>No user selected.</Text>
+        )}
+      </Modal>
     </>
   );
 };
