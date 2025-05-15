@@ -17,6 +17,8 @@ class ResourceURL {
   static CLIENT_CATEGORY = apiPath + "/categories";
   static CLIENT_CART = apiPath + "/cart";
 
+  static RECOMMENDATION_BASE = apiPath + "/recommend";
+
   static CLIENT_ORDER = apiPath + "/orders";
   static CLIENT_CHECKOUT = this.CLIENT_ORDER + "/checkout";
   static CLIENT_GET_MY_ORDERS = this.CLIENT_ORDER + "/my-orders";
