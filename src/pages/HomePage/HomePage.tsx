@@ -1,7 +1,9 @@
 import { Container, Stack, useMantineTheme } from "@mantine/core";
 import HomeBanner from "../../components/HomeBanner";
-// import BookCarousel from "../../components/BookCarousel";
 import ClientLatestBooks from "./ClientLatestBooks";
+import ClientMostRatedBooks from "./ClientMostRatedBooks";
+import ClientTrendingBooks from "./ClientTrendingBooks";
+import ClientGreatBooksSmallPrices from "./ClientGreatBooksSmallPrices";
 
 const HomePage = () => {
   const theme = useMantineTheme();
@@ -11,14 +13,9 @@ const HomePage = () => {
         <Stack gap={theme.spacing.lg}>
           <HomeBanner />
           <ClientLatestBooks />
-          {/* <BookCarousel />
-          <BookCarousel />
-          <BookCarousel /> */}
-
-          {/* <ClientHomeBanner/>
-        <ClientHomeFeaturedCategories/>
-        <ClientHomeLatestProducts/>
-        <ClientHomeNewsletter/> */}
+          <ClientMostRatedBooks />
+          <ClientTrendingBooks />
+          <ClientGreatBooksSmallPrices />
         </Stack>
       </Container>
     </main>

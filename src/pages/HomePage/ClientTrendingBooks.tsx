@@ -8,10 +8,10 @@ import { IconAlertTriangle, IconMarquee } from "@tabler/icons-react";
 import { BookResponse } from "../../models/Book";
 import BookCardSkeleton from "../../components/BookCardSkeleton";
 
-function ClientLatestBooks() {
+function ClientTrendingBooks() {
   const theme = useMantineTheme();
 
-  const requestParams = { size: 12, page: 0, sort: "publicationDate,desc" };
+  const requestParams = { size: 12, page: 0, sort: "ratingCount,desc" };
 
   const {
     data: bookResponses,
@@ -81,7 +81,7 @@ function ClientLatestBooks() {
     <Stack>
       <Title order={2}>
         <Text color="orange" inherit>
-          New Arrivals
+          Trending Books
         </Text>
       </Title>
 
@@ -90,4 +90,4 @@ function ClientLatestBooks() {
   );
 }
 
-export default ClientLatestBooks;
+export default ClientTrendingBooks;

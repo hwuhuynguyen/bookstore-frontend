@@ -84,7 +84,7 @@ function DefaultHeader() {
       setDisabledNotificationIndicator(true);
       navigate("/user/notification");
     } else {
-      //   NotifyUtils.simple('Vui lòng đăng nhập để sử dụng chức năng');
+        NotifyUtils.simple('Please log in to continue with this action.');
     }
   };
   return (
@@ -257,40 +257,19 @@ function DefaultHeader() {
       </Group>
       <Group gap="apart" mb="md" justify="space-between" mx={16}>
         <Group gap={2}>
-          {/* <Popover
-              opened={openedCategoryMenu}
-              onClose={() => setOpenedCategoryMenu(false)}
-              target={(
-                <Button onClick={() => setOpenedCategoryMenu((o) => !o)} leftSection={<IconList size={16}/>} radius="md">
-                  Danh mục sản phẩm
-                </Button>
-              )}
-              width={widthHeaderStack}
-              position="bottom"
-              placement="start"
-              radius="md"
-              shadow="md"
-            >
-              <CategoryMenu setOpenedCategoryMenu={setOpenedCategoryMenu}/>
-            </Popover> */}
           <Link to="/books">
             <Button variant="subtle" radius="md">
-              New arrivals
+              Explore Our Library - What Will You Read Next?
             </Button>
           </Link>
-          <Button variant="subtle" color="green" radius="md">
-            Trending
-          </Button>
-          <Button variant="subtle" color="pink" radius="md">
-            Promotion
-          </Button>
+          
         </Group>
         <Group gap="xs">
           <Badge color="pink" size="xs" variant="filled">
             Hot
           </Badge>
           <Text size="sm" color="dimmed">
-            Free shipping for orders over 1 million VND
+            Free shipping for orders
           </Text>
         </Group>
       </Group>
