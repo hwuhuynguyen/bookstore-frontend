@@ -36,6 +36,7 @@ import { UserResponse } from "../../models/User";
 import { OrderRequest } from "../../models/Order";
 import { VnPayResponse } from "../../models/Payment";
 import { useNavigate } from "react-router-dom";
+import NotifyUtils from "../../utils/NotifyUtils";
 
 export default function ClientShoppingCart() {
   const queryClient = useQueryClient();
@@ -184,10 +185,15 @@ export default function ClientShoppingCart() {
 
   // Handle checkout
   const handleCheckout = () => {
-    checkoutMutation.mutate({
-      addressId: selectedAddress?.id || "",
-      paymentTypeId: parseInt(paymentMethod),
-    });
+    if (selectedAddress?.id) {
+
+      checkoutMutation.mutate({
+        addressId: selectedAddress?.id,
+        paymentTypeId: parseInt(paymentMethod),
+      });
+    } else {
+      NotifyUtils.simpleFailed("Please add your shipping address to complete the order.")
+    }
   };
 
   // Handle quantity change

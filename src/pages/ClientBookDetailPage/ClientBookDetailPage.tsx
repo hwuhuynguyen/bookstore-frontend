@@ -71,6 +71,7 @@ export default function ClientBookDetailPage() {
   const handleAddToCart = () => {
     if (user) {
       addQuantityMutation.mutate({ bookId: book.id, quantity });
+      NotifyUtils.simpleSuccess("This book is added to cart successfully.");
     } else {
       NotifyUtils.simpleFailed("Please log in to continue with this action.");
     }

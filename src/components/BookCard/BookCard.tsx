@@ -42,6 +42,7 @@ function BookCard({ book }: BookCardProps) {
       queryClient.invalidateQueries({
         queryKey: ["client-api", "carts", "getCart"],
       });
+      NotifyUtils.simpleSuccess("This book is added to cart successfully.")
     },
   });
 
