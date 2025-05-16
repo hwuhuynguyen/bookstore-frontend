@@ -31,7 +31,7 @@ function ClientRecommendedForYou() {
   if (isLoadingBookResponses) {
     resultFragment = (
       <Grid>
-        {Array(6)
+        {Array(4)
           .fill(0)
           .map((_, index) => (
             <Grid.Col span={{ base: 12, sm: 6, md: 3 }} key={index}>
