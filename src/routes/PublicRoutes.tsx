@@ -86,37 +86,57 @@ export const publicRoutes: RouteObject[] = [
         path: "order",
         element: (
           <RequireAuth>
-            <ClientOrderPage />,
+            <ClientOrderPage />
           </RequireAuth>
         ),
       },
       {
         path: "order/detail/:orderId",
-        element: <ClientOrderDetailPage />,
+        element: (
+          <RequireAuth>
+            <ClientOrderDetailPage />
+          </RequireAuth>
+        ),
       },
       {
         path: "user",
         element: (
           <RequireAuth>
-            <ClientUserPage />,
+            <ClientUserPage />
           </RequireAuth>
         ),
       },
       {
         path: "user/setting",
-        element: <ClientSettingPage />,
+        element: (
+          <RequireAuth>
+            <ClientSettingPage />
+          </RequireAuth>
+        ),
       },
       {
         path: "user/notification",
-        element: <ClientNotificationPage />,
+        element: (
+          <RequireAuth>
+            <ClientNotificationPage />
+          </RequireAuth>
+        ),
       },
       {
         path: "user/review",
-        element: <ClientReviewPage />,
+        element: (
+          <RequireAuth>
+            <ClientReviewPage />
+          </RequireAuth>
+        ),
       },
       {
         path: "user/wishlist",
-        element: <ClientWishlistPage />,
+        element: (
+          <RequireAuth>
+            <ClientWishlistPage />
+          </RequireAuth>
+        ),
       },
       {
         path: "*",

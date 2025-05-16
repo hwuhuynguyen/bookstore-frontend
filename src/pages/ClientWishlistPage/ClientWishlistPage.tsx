@@ -1,16 +1,53 @@
-import { Card, Container, Grid, Group, Pagination, Skeleton, Stack, Text, Title, useMantineTheme } from "@mantine/core";
+import {
+  Card,
+  Container,
+  Grid,
+  Group,
+  Pagination,
+  Skeleton,
+  Stack,
+  Text,
+  Title,
+  useMantineTheme,
+} from "@mantine/core";
 import UserNavbar from "../../components/UserNavbar";
 import { useState } from "react";
 import WishCard from "../../components/WishCard";
+import { useQuery } from "@tanstack/react-query";
+import FetchUtils, { ErrorMessage, ListResponse } from "../../utils/FetchUtils";
+import ResourceURL from "../../constants/ResourceURL";
+import { WishlistResponse } from "../../models/Wishlist";
+import { IconAlertTriangle, IconMoodAnnoyed } from "@tabler/icons-react";
 
 function ClientWishlistPage() {
-  const theme = useMantineTheme()
-  const [isLoading, setIsLoading] = useState(false);
-  const [activePage, setActivePage]= useState(0)
-  const wishes: any = [{}, {}, {}]
+  const theme = useMantineTheme();
+  const [activePage, setActivePage] = useState(1);
+
+  const requestParams = {
+    size: 5,
+    page: activePage - 1,
+    sort: "createdAt,desc",
+  };
+
+  const {
+    data: wishlistResponses,
+    isLoading: isLoadingWishlistResponses,
+    isError: isErrorWishlistResponses,
+  } = useQuery<ListResponse<WishlistResponse>, ErrorMessage>({
+    queryKey: ["client-api", "wishlist", "getWishlist", requestParams],
+    queryFn: () =>
+      FetchUtils.getWithToken<ListResponse<WishlistResponse>>(
+        ResourceURL.WISHLIST_BASE,
+        requestParams
+      ),
+    refetchOnWindowFocus: false,
+  });
+
+  const wishlist = wishlistResponses as ListResponse<WishlistResponse>;
+
   let wishlistContentFragment;
 
-  if (isLoading) {
+  if (isLoadingWishlistResponses) {
     wishlistContentFragment = (
       <Stack>
         {Array(5)
@@ -22,21 +59,52 @@ function ClientWishlistPage() {
     );
   }
 
-  if (wishes && wishes.length > 0) {
+  if (isErrorWishlistResponses) {
+    wishlistContentFragment = (
+      <Stack
+        my={theme.spacing.xl}
+        style={{ alignItems: "center", color: theme.colors.pink[6] }}
+      >
+        <IconAlertTriangle size={125} strokeWidth={1} />
+        <Text size="xl" fw={500}>
+          Error occurred while fetching data
+        </Text>
+      </Stack>
+    );
+  }
+
+  if (wishlist && wishlist.totalElements === 0) {
+    wishlistContentFragment = (
+      <Stack
+        my={theme.spacing.xl}
+        style={{ alignItems: "center", color: theme.colors.blue[5] }}
+      >
+        <IconMoodAnnoyed size={125} strokeWidth={1} />
+        <Text size="xl" fw={500}>
+          No wishlist yet
+        </Text>
+      </Stack>
+    );
+  }
+
+  if (wishlist && wishlist.totalElements > 0) {
     wishlistContentFragment = (
       <>
-        <Stack>
-          {wishes.map((wish: any) => <WishCard key={wish.id} wish={wish}/>)}
+        <Stack gap="xs">
+          {wishlist?.data?.map((wishItem) => (
+            <WishCard key={wishItem.id} wish={wishItem} />
+          ))}
         </Stack>
-
         <Group justify="space-between" mt={theme.spacing.lg}>
           <Pagination
-            total={100}
-            onChange={(page: number) => (page !== activePage) && setActivePage(page)}
+            value={activePage}
+            total={wishlist.totalPages}
+            onChange={(page: number) =>
+              page !== activePage && setActivePage(page)
+            }
           />
-          <Text>
-            <Text component="span">Page {activePage}</Text>
-            <span> / {100}</span>
+          <Text component="span">
+            Page {activePage} / {wishlist.totalPages}
           </Text>
         </Group>
       </>

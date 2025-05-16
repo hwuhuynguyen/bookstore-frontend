@@ -269,7 +269,7 @@ function DefaultHeader() {
             Hot
           </Badge>
           <Text size="sm" color="dimmed">
-            Free shipping for orders
+            Free shipping for all orders
           </Text>
         </Group>
       </Group>

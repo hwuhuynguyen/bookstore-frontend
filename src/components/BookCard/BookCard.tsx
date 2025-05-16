@@ -50,7 +50,7 @@ function BookCard({ book }: BookCardProps) {
     if (user) {
       addQuantityMutation.mutate({ bookId: book.id, quantity: 1 });
     } else {
-      NotifyUtils.simpleFailed("Please log in to continue with this action.")
+      NotifyUtils.simple("Please log in to continue with this action.")
     }
   };
   return (

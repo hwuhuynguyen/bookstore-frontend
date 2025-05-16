@@ -22,7 +22,12 @@ import {
   Skeleton,
   AvatarGroup,
 } from "@mantine/core";
-import { IconMinus, IconPlus, IconShoppingCart } from "@tabler/icons-react";
+import {
+  IconHeart,
+  IconMinus,
+  IconPlus,
+  IconShoppingCart,
+} from "@tabler/icons-react";
 import { useParams } from "react-router-dom";
 import FetchUtils, { ErrorMessage } from "../../utils/FetchUtils";
 import { BookResponse } from "../../models/Book";
@@ -36,6 +41,7 @@ import useAuthStore from "../../stores/AuthStore";
 import NotifyUtils from "../../utils/NotifyUtils";
 import ClientRelatedBooks from "./ClientRelatedBooks";
 import DateUtils from "../../utils/DateUtils";
+import { WishlistRequest } from "../../models/Wishlist";
 
 export default function ClientBookDetailPage() {
   const theme = useMantineTheme();
@@ -73,7 +79,32 @@ export default function ClientBookDetailPage() {
       addQuantityMutation.mutate({ bookId: book.id, quantity });
       NotifyUtils.simpleSuccess("This book is added to cart successfully.");
     } else {
-      NotifyUtils.simpleFailed("Please log in to continue with this action.");
+      NotifyUtils.simple("Please log in to continue with this action.");
+    }
+  };
+
+  const addWishlistMutation = useMutation<
+    CartResponse,
+    ErrorMessage,
+    AddToCartRequest
+  >({
+    mutationFn: ({ bookId }: WishlistRequest) =>
+      FetchUtils.postWithToken(`${ResourceURL.WISHLIST_BASE}`, {
+        bookId,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["client-api", "wishlist", "getWishlist"],
+      });
+    },
+  });
+
+  const handleAddToWishlist = () => {
+    if (user) {
+      addWishlistMutation.mutate({ bookId: book.id, quantity });
+      NotifyUtils.simpleSuccess("This book is added to cart successfully.");
+    } else {
+      NotifyUtils.simple("Please log in to continue with this action.");
     }
   };
 
@@ -149,8 +180,9 @@ export default function ClientBookDetailPage() {
                   Author
                 </Text>
                 <Text>
-                  {book?.authors.map((author) => author.name).join(", ") ||
-                    "N/A"}
+                  {book?.authors?.length
+                    ? book.authors.map((author) => author.name).join(", ")
+                    : "N/A"}
                 </Text>
               </Box>
               <Box ml="xl">
@@ -163,7 +195,10 @@ export default function ClientBookDetailPage() {
                 <Text size="xs" c="dimmed">
                   Publication year
                 </Text>
-                <Text>{DateUtils.convertTimestampToDate(book?.publicationDate) || "N/A"}</Text>
+                <Text>
+                  {DateUtils.convertTimestampToDate(book?.publicationDate) ||
+                    "N/A"}
+                </Text>
               </Box>
             </Group>
 
@@ -449,10 +484,21 @@ export default function ClientBookDetailPage() {
               >
                 Add to cart
               </Button>
+              <Button
+                fullWidth
+                variant="outline"
+                color="red"
+                leftSection={<IconHeart size={18} />}
+                mt="sm"
+                radius="md"
+                onClick={handleAddToWishlist}
+              >
+                Add to wishlist
+              </Button>
             </Paper>
           </Grid.Col>
         </Grid>
-        <ClientRelatedBooks book={book}/>
+        <ClientRelatedBooks book={book} />
       </Stack>
     </Container>
   );
