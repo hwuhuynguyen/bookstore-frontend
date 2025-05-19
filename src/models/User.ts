@@ -2,13 +2,18 @@ import { AddressResponse } from "./Address";
 import BaseResponse from "./BaseResponse";
 
 export interface UserRequest {
-  username: string;
-  password: string;
-  confirmedPassword: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
+  username?: string;
+  password?: string;
+  confirmedPassword?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
 }
 
 export interface UserResponse extends BaseResponse {
