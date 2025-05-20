@@ -82,7 +82,7 @@ function ClientSettingPage() {
 
   const changePasswordMutation = useMutation({
     mutationFn: (data: ChangePasswordRequest) =>
-      FetchUtils.postWithToken(ResourceURL.CLIENT_USER_PASSWORD, data),
+      FetchUtils.postWithTokenNoContentResponse(ResourceURL.CLIENT_USER_PASSWORD, data),
     onSuccess: () => {
       NotifyUtils.simpleSuccess("Your password has been successfully updated.");
       setOpenedModal(null);

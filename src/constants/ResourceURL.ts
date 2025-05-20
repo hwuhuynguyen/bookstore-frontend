@@ -29,6 +29,9 @@ class ResourceURL {
 
   static WISHLIST_BASE = apiPath + "/wishlist";
 
+  static REVIEW_BASE = apiPath + "/review";
+  static CLIENT_GET_MY_REVIEWS = this.REVIEW_BASE + "/my-reviews";
+
   // --- ADMIN ROUTE ---
   static ADMIN_GET_ALL_ORDERS = this.CLIENT_ORDER + "/all-orders";
   static ADMIN_GET_ALL_USERS = this.USER_BASE + "/all";

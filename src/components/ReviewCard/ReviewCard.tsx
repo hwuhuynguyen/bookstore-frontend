@@ -1,21 +1,51 @@
 import {
   Anchor,
-  Badge,
   Blockquote,
   Button,
   Card,
   Group,
   Image,
+  Rating,
   Stack,
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { IconStar, IconTrash } from "@tabler/icons-react";
+import { IconTrash } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
+import { ReviewResponse } from "../../models/Review";
+import ApplicationConstants from "../../constants/ApplicationConstants";
+import DateUtils from "../../utils/DateUtils";
+import NotifyUtils from "../../utils/NotifyUtils";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import FetchUtils from "../../utils/FetchUtils";
+import ResourceURL from "../../constants/ResourceURL";
 
-function ReviewCard({ review }: { review: any }) {
+interface ReviewCardProps {
+  review: ReviewResponse;
+}
+
+function ReviewCard({ review }: ReviewCardProps) {
   const theme = useMantineTheme();
+  const queryClient = useQueryClient();
+  const removeItemMutation = useMutation({
+    mutationFn: () =>
+      FetchUtils.deleteWithToken(
+        `${ResourceURL.REVIEW_BASE}/${review.id}`,
+        {}
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["client-api", "reviews", "getMyReviews"],
+      });
+      NotifyUtils.simpleSuccess(
+        "This review is removed from review list successfully."
+      );
+    },
+  });
 
+  const handleRemoveItemFromReviewList = () => {
+    removeItemMutation.mutate();
+  };
   return (
     <Card p="sm" radius="md">
       <Stack gap={3.5}>
@@ -23,67 +53,53 @@ function ReviewCard({ review }: { review: any }) {
           <Group>
             <Group gap="xs">
               <Image
+                src={
+                  review.book?.imageUrl ||
+                  ApplicationConstants.DEFAULT_THUMBNAIL_URL
+                }
                 radius="md"
                 style={{ width: "24px" }}
-                src={
-                  review.reviewProduct ||
-                  "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-8.png"
-                }
-                alt={review.reviewProduct}
+                alt={review.book?.title}
+                onError={(e) => {
+                  e.currentTarget.src =
+                    ApplicationConstants.DEFAULT_THUMBNAIL_URL;
+                }}
               />
               <Anchor
                 component={Link}
-                to={"/book/" + review.reviewProduct}
+                to={"/book/" + review.book.slug}
                 fw={500}
                 size="sm"
               >
-                {review.reviewProduct || "The Great Gatsby"}
+                {review.book.title}
               </Anchor>
             </Group>
 
             <Text size="sm" color="dimmed">
-              {"20/04/2025"}
+              {DateUtils.convertTimestampToUTC(review.updatedAt)}
             </Text>
 
             <Group gap={5}>
-              {Array(5)
-                .fill(0)
-                .map((_, index) => (
-                  <IconStar
-                    key={index}
-                    color={
-                      index < review.reviewRatingScore
-                        ? theme.colors.yellow[5]
-                        : theme.colors.gray[5]
-                    }
-                    fill={
-                      index < review.reviewRatingScore
-                        ? theme.colors.yellow[5]
-                        : theme.colors.gray[5]
-                    }
-                    size={14}
-                  />
-                ))}
+              <Rating value={review?.rating} fractions={2} readOnly size="xs" />
             </Group>
           </Group>
 
-          <Button variant="outline" color="red">
+          <Button
+            variant="subtle"
+            color="red"
+            onClick={handleRemoveItemFromReviewList}
+          >
             <IconTrash size={16} strokeWidth={1.5} />
           </Button>
         </Group>
 
         <Blockquote
           color={
-            review.reviewStatus === 1
-              ? "gray"
-              : review.reviewStatus === 2
-              ? "teal"
-              : "pink"
+            review.rating < 3 ? "pink" : review.rating > 3 ? "teal" : "gray"
           }
           style={{ fontSize: theme.fontSizes.sm }}
         >
-          {review.reviewContent ||
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum"}
+          {review.comment}
         </Blockquote>
       </Stack>
     </Card>

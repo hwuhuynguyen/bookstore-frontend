@@ -120,7 +120,33 @@ class FetchUtils {
    * @param requestBody
    * @param isAdmin
    */
-  static async postWithToken<I, O>(resourceUrl: string, requestBody: I, isAdmin?: boolean): Promise<O | null> {
+  static async postWithToken<I, O>(resourceUrl: string, requestBody: I, isAdmin?: boolean): Promise<O> {
+    const token = JSON.parse(localStorage
+      .getItem(isAdmin ? 'admin-auth-storage' : 'auth-storage') || '{}').state?.accessToken;
+
+    const response = await fetch(resourceUrl, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      throw await response.json();
+    }
+    return await response.json();
+  }
+
+  /**
+   * Hàm postWithTokenNoContentResponse
+   * @param resourceUrl
+   * @param requestBody
+   * @param isAdmin
+   */
+  static async postWithTokenNoContentResponse<I, O>(resourceUrl: string, requestBody: I, isAdmin?: boolean): Promise<O | null> {
     const token = JSON.parse(localStorage
       .getItem(isAdmin ? 'admin-auth-storage' : 'auth-storage') || '{}').state?.accessToken;
 
