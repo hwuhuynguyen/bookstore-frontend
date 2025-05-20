@@ -21,26 +21,34 @@ import {
   IconAlertTriangle,
   IconEye,
   IconEdit,
+  IconTrash,
 } from "@tabler/icons-react";
 import FetchUtils, { ErrorMessage, ListResponse } from "../../utils/FetchUtils";
-import { useQuery } from "@tanstack/react-query";
-import { CategoryResponse } from "../../models/Category";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { CategoryRequest, CategoryResponse } from "../../models/Category";
 import ResourceURL from "../../constants/ResourceURL";
 import DateUtils from "../../utils/DateUtils";
+import { useDebouncedValue } from "@mantine/hooks";
+import NotifyUtils from "../../utils/NotifyUtils";
 
 const AdminCategoryPage = () => {
   const theme = useMantineTheme();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [activePage, setActivePage] = useState(1);
   const [viewUpdateModal, setViewUpdateModal] = useState(false);
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryResponse | null>(null); // Selected category for update
-  const [modalMode, setModalMode] = useState<"view" | "edit">("view");
+  const [modalMode, setModalMode] = useState<"view" | "edit" | "create">(
+    "view"
+  );
+  const [debouncedSearchQuery] = useDebouncedValue(searchQuery, 500);
 
   const requestParams = {
     size: 10,
     page: activePage - 1,
-    sort: "name,asc"
+    sort: "name,asc",
+    search: debouncedSearchQuery,
   };
 
   const {
@@ -55,6 +63,57 @@ const AdminCategoryPage = () => {
         requestParams
       ),
     refetchOnWindowFocus: false,
+  });
+
+  const updateCategoryMutation = useMutation({
+    mutationFn: (category: CategoryRequest) =>
+      FetchUtils.putWithToken(
+        `${ResourceURL.CLIENT_CATEGORY}/${category.id}`,
+        category,
+        true
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["client-api", "categories"] });
+      setViewUpdateModal(false);
+      NotifyUtils.simpleSuccess("This category is updated successfully.");
+    },
+    onError: () => {
+      NotifyUtils.simpleFailed(
+        "Failed to update this category. Please try again later."
+      );
+    },
+  });
+
+  const createCategoryMutation = useMutation({
+    mutationFn: (category: CategoryRequest) =>
+      FetchUtils.postWithToken(ResourceURL.CLIENT_CATEGORY, category, true),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["client-api", "categories"] });
+      setViewUpdateModal(false);
+      NotifyUtils.simpleSuccess("New category added successfully.");
+    },
+    onError: () => {
+      NotifyUtils.simpleFailed(
+        "Failed to add category. Please try again later."
+      );
+    },
+  });
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: (id: string) =>
+      FetchUtils.deleteWithToken(
+        `${ResourceURL.CLIENT_CATEGORY}/${id}`,
+        {},
+        true
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["client-api", "categories"] });
+      setViewUpdateModal(false);
+      NotifyUtils.simpleSuccess("Category deleted successfully.");
+    },
+    onError: () => {
+      NotifyUtils.simpleFailed("Failed to delete category. Please try again.");
+    },
   });
 
   const categories = categoryResponses as ListResponse<CategoryResponse>;
@@ -93,10 +152,11 @@ const AdminCategoryPage = () => {
             <Table.Tr>
               <Table.Th style={{ width: "5%" }}>No.</Table.Th>
               <Table.Th style={{ width: "25%" }}>Category ID</Table.Th>
-              <Table.Th style={{ width: "25%" }}>Name</Table.Th>
-              <Table.Th style={{ width: "15%" }}>Created at</Table.Th>
-              <Table.Th style={{ width: "15%" }}>Updated at</Table.Th>
-              <Table.Th style={{ width: "15%", textAlign: "center" }}>
+              <Table.Th style={{ width: "20%" }}>Name</Table.Th>
+              <Table.Th style={{ width: "14%" }}>Total books</Table.Th>
+              <Table.Th style={{ width: "12%" }}>Created at</Table.Th>
+              <Table.Th style={{ width: "12%" }}>Updated at</Table.Th>
+              <Table.Th style={{ width: "12%", textAlign: "center" }}>
                 Actions
               </Table.Th>
             </Table.Tr>
@@ -109,6 +169,7 @@ const AdminCategoryPage = () => {
                 </Table.Td>
                 <Table.Td>{category.id}</Table.Td>
                 <Table.Td>{category.name}</Table.Td>
+                <Table.Td>{category.totalBooks}</Table.Td>
                 <Table.Td>
                   {DateUtils.convertTimestampToUTC(category.createdAt)}
                 </Table.Td>
@@ -116,7 +177,7 @@ const AdminCategoryPage = () => {
                   {DateUtils.convertTimestampToUTC(category.updatedAt)}
                 </Table.Td>
                 <Table.Td>
-                  <Group gap="xs" justify="center">
+                  <Group gap="xs" justify="flex-start">
                     <Tooltip label="View details">
                       <ActionIcon
                         variant="subtle"
@@ -143,6 +204,19 @@ const AdminCategoryPage = () => {
                         <IconEdit size={16} />
                       </ActionIcon>
                     </Tooltip>
+                    {category.totalBooks == 0 && (
+                      <Tooltip label="Delete category">
+                        <ActionIcon
+                          variant="subtle"
+                          radius={"md"}
+                          onClick={() => {
+                            deleteCategoryMutation.mutate(category.id);
+                          }}
+                        >
+                          <IconTrash size={16} />
+                        </ActionIcon>
+                      </Tooltip>
+                    )}
                   </Group>
                 </Table.Td>
               </Table.Tr>
@@ -177,12 +251,23 @@ const AdminCategoryPage = () => {
               leftSection={<IconPlus size={16} />}
               color="blue"
               radius="md"
+              onClick={() => {
+                setSelectedCategory({
+                  id: "",
+                  name: "",
+                  createdAt: "",
+                  updatedAt: "",
+                  totalBooks: 0,
+                });
+                setModalMode("create");
+                setViewUpdateModal(true);
+              }}
             >
               Add new category
             </Button>
           </Group>
           <TextInput
-            placeholder="Search categories..."
+            placeholder="Search categories by name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             leftSection={<IconSearch size={16} />}
@@ -204,14 +289,16 @@ const AdminCategoryPage = () => {
       >
         {selectedCategory ? (
           <Stack>
-            <TextInput
-              label="Category ID"
-              value={selectedCategory.id}
-              disabled
-            />
+            {modalMode !== "create" && (
+              <TextInput
+                label="Category ID"
+                value={selectedCategory.id}
+                disabled
+              />
+            )}
 
             <TextInput
-              label="Category Name"
+              label="Category name"
               value={selectedCategory.name}
               onChange={(e) =>
                 setSelectedCategory({
@@ -222,18 +309,45 @@ const AdminCategoryPage = () => {
               disabled={modalMode === "view"}
             />
 
-            <TextInput
-              label="Created At"
-              value={DateUtils.convertTimestampToUTC(
-                selectedCategory.createdAt
-              )}
-              disabled
-            />
+            {modalMode !== "create" && (
+              <TextInput
+                label="Created at"
+                value={DateUtils.convertTimestampToUTC(
+                  selectedCategory.createdAt
+                )}
+                disabled
+              />
+            )}
+            {modalMode !== "create" && (
+              <TextInput
+                label="Updated at"
+                value={DateUtils.convertTimestampToUTC(
+                  selectedCategory.updatedAt
+                )}
+                disabled
+              />
+            )}
 
-            {modalMode === "edit" && (
-              <Group justify="center" mt="md">
+            {modalMode !== "view" ? (
+              <Group justify="center" mt="md" grow>
                 <Button
                   color="green"
+                  size="md"
+                  radius="md"
+                  onClick={() => {
+                    if (selectedCategory) {
+                      if (modalMode === "edit") {
+                        updateCategoryMutation.mutate(selectedCategory);
+                      } else if (modalMode === "create") {
+                        createCategoryMutation.mutate(selectedCategory);
+                      }
+                    }
+                  }}
+                >
+                  Save
+                </Button>
+                <Button
+                  variant="outline"
                   size="md"
                   radius="md"
                   onClick={() => {
@@ -241,7 +355,20 @@ const AdminCategoryPage = () => {
                     setViewUpdateModal(false);
                   }}
                 >
-                  Save Changes
+                  Cancel
+                </Button>
+              </Group>
+            ) : (
+              <Group justify="center" mt="md" grow>
+                <Button
+                  size="md"
+                  radius="md"
+                  onClick={() => {
+                    // Save logic here
+                    setViewUpdateModal(false);
+                  }}
+                >
+                  Close
                 </Button>
               </Group>
             )}
