@@ -12,6 +12,7 @@ class ResourceURL {
   static USER_BASE = apiPath + "/users";
   static CLIENT_USER_INFO = this.USER_BASE + "/personal-info";
   static CLIENT_USER_ADDRESS = this.CLIENT_USER_INFO + "/address";
+  static CLIENT_USER_PASSWORD = this.CLIENT_USER_INFO + "/password"
 
   static CLIENT_BOOK = apiPath + "/books";
   static CLIENT_CATEGORY = apiPath + "/categories";

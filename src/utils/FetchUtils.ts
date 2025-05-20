@@ -120,7 +120,7 @@ class FetchUtils {
    * @param requestBody
    * @param isAdmin
    */
-  static async postWithToken<I, O>(resourceUrl: string, requestBody: I, isAdmin?: boolean): Promise<O> {
+  static async postWithToken<I, O>(resourceUrl: string, requestBody: I, isAdmin?: boolean): Promise<O | null> {
     const token = JSON.parse(localStorage
       .getItem(isAdmin ? 'admin-auth-storage' : 'auth-storage') || '{}').state?.accessToken;
 
@@ -133,6 +133,11 @@ class FetchUtils {
       },
       body: JSON.stringify(requestBody),
     });
+
+    if (response.status === 204) {
+      // No content — just return null or some empty result
+      return null;
+    }
 
     if (!response.ok) {
       throw await response.json();

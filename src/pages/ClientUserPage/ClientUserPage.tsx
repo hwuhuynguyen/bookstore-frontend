@@ -267,6 +267,7 @@ function AddressesSection({
         leftSection={<IconMapPin size={16} />}
         style={{ alignSelf: "flex-start" }}
         onClick={() => setModalOpened(true)}
+        radius="md"
       >
         Add new address
       </Button>
@@ -274,6 +275,7 @@ function AddressesSection({
         opened={modalOpened}
         onClose={() => setModalOpened(false)}
         title={<Title order={3}>ADD NEW ADDRESS</Title>}
+        radius="md"
       >
         <Stack>
           <Textarea
@@ -283,6 +285,7 @@ function AddressesSection({
             onChange={(e) => setNewAddress(e.currentTarget.value)}
           />
           <Button
+            radius="md"
             onClick={() => {
               FetchUtils.postWithToken(ResourceURL.CLIENT_USER_ADDRESS, {
                 address: newAddress,

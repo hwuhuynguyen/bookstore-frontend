@@ -102,7 +102,7 @@ export default function ClientBookDetailPage() {
   const handleAddToWishlist = () => {
     if (user) {
       addWishlistMutation.mutate({ bookId: book.id, quantity });
-      NotifyUtils.simpleSuccess("This book is added to cart successfully.");
+      NotifyUtils.simpleSuccess("This book is added to wishlist successfully.");
     } else {
       NotifyUtils.simple("Please log in to continue with this action.");
     }
@@ -154,7 +154,7 @@ export default function ClientBookDetailPage() {
                 readOnly
               />
               <Text size="sm" c="dimmed">
-                {book?.averageRating || 0}/5
+                {book?.averageRating.toFixed(2) || "0.00"}/{"5.00"}
               </Text>
               <Badge color="cyan" variant="outline">
                 {book?.ratingCount || 0} rates
