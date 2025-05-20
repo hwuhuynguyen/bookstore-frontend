@@ -21,6 +21,8 @@ import {
   Divider,
   Skeleton,
   AvatarGroup,
+  Textarea,
+  Pagination,
 } from "@mantine/core";
 import {
   IconHeart,
@@ -35,13 +37,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import ResourceURL from "../../constants/ResourceURL";
 import ErrorFetchingPage from "../ErrorFetchingPage";
 import ApplicationConstants from "../../constants/ApplicationConstants";
-import { MOCK_REVIEW_DATA } from "../../data/reviews";
 import { AddToCartRequest, CartResponse } from "../../models/Cart";
 import useAuthStore from "../../stores/AuthStore";
 import NotifyUtils from "../../utils/NotifyUtils";
 import ClientRelatedBooks from "./ClientRelatedBooks";
 import DateUtils from "../../utils/DateUtils";
 import { WishlistRequest } from "../../models/Wishlist";
+import { RatingDistributionItem, ReviewPageWrapper, ReviewResponse } from "../../models/Review";
 
 export default function ClientBookDetailPage() {
   const theme = useMantineTheme();
@@ -49,6 +51,9 @@ export default function ClientBookDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<string>("details");
   const { user, updateCurrentTotalCartItems } = useAuthStore();
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [activePage, setActivePage] = useState(1);
 
   const { id } = useParams();
   const { bookResponse, isLoadingBookResponse, isErrorBookResponse } =
@@ -107,6 +112,42 @@ export default function ClientBookDetailPage() {
       NotifyUtils.simple("Please log in to continue with this action.");
     }
   };
+
+  const reviewRequestParams = {
+    size: 5,
+    page: activePage - 1,
+    sort: "updatedAt,desc",
+  };
+
+  const { data: reviewPage, refetch: refetchReviews } = useQuery<
+    ReviewPageWrapper,
+    ErrorMessage
+  >({
+    queryKey: ["reviews", book?.id, reviewRequestParams],
+    queryFn: () =>
+      FetchUtils.get<ReviewPageWrapper>(
+        `${ResourceURL.REVIEW_BASE}/book/${book?.id}`, reviewRequestParams
+      ),
+    enabled: !!book,
+  });
+
+  const reviewMutation = useMutation({
+    mutationFn: () =>
+      FetchUtils.postWithToken(`${ResourceURL.REVIEW_BASE}`, {
+        bookId: book?.id,
+        rating,
+        comment,
+      }),
+    onSuccess: () => {
+      NotifyUtils.simpleSuccess("Your review was submitted successfully!");
+      setRating(0);
+      setComment("");
+      refetchReviews();
+      queryClient.invalidateQueries({
+        queryKey: ["client-api", "books", "getBook", id],
+      });
+    },
+  });
 
   if (isLoadingBookResponse) {
     return <ClientBookSkeleton />;
@@ -278,7 +319,11 @@ export default function ClientBookDetailPage() {
                   <Table.Tbody>
                     <Table.Tr>
                       <Table.Th w={250}>Publication date</Table.Th>
-                      <Table.Td>{book.publicationDate || "N/A"}</Table.Td>
+                      <Table.Td>
+                        {DateUtils.convertTimestampToDate(
+                          book.publicationDate
+                        ) || "N/A"}
+                      </Table.Td>
                     </Table.Tr>
                     <Table.Tr>
                       <Table.Th w={250}>ISBN</Table.Th>
@@ -332,36 +377,37 @@ export default function ClientBookDetailPage() {
                     direction={{ base: "column", sm: "row" }}
                     gap="xl"
                     align="flex-start"
+                    wrap="wrap"
                   >
                     {/* Left side - Rating summary */}
-                    <Box style={{ flex: 1 }}>
-                      <Group align="flex-end" mb="xs">
+                    <Box style={{ flex: 1, minWidth: 300 }}>
+                      <Group align="flex-end" mb="sm">
                         <Text fz={36} fw={700} lh={1}>
-                          {MOCK_REVIEW_DATA.averageRating}
+                          {book?.averageRating.toFixed(2)}
                         </Text>
                         <Box>
                           <Rating
-                            value={MOCK_REVIEW_DATA.averageRating}
+                            value={book?.averageRating}
                             fractions={2}
                             readOnly
                             size="md"
                           />
                           <Text fz="sm" c="dimmed">
-                            {MOCK_REVIEW_DATA.totalReviews} reviews
+                            {book?.reviewCount} reviews
                           </Text>
                         </Box>
                       </Group>
 
                       <Stack gap="xs" mb="md">
-                        {MOCK_REVIEW_DATA.ratingDistribution.map(
-                          (item: any) => (
+                        {reviewPage?.ratingDistribution.map(
+                          (item: RatingDistributionItem) => (
                             <Group key={item.stars} gap="xs">
                               <Text fz="sm" w={35}>
                                 {item.stars} star
                               </Text>
                               <Progress
                                 value={
-                                  (item.count / MOCK_REVIEW_DATA.totalReviews) *
+                                  (item.count / reviewPage.pageData.totalElements) *
                                   100
                                 }
                                 size="sm"
@@ -402,9 +448,42 @@ export default function ClientBookDetailPage() {
                       </Group>
                     </Box>
 
-                    {/* Right side - Filter options */}
-                    <Box style={{ flex: 1 }}>
-                      {/* You can add filter options here if needed */}
+                    {/* Right side - Review form */}
+                    <Box style={{ flex: 1, minWidth: 300 }}>
+                      {user ? (
+                        <>
+                          <Text fw={500} mb="xs">
+                            Write a review
+                          </Text>
+                          <Stack gap="sm">
+                            <Rating value={rating} onChange={setRating} />
+                            <Textarea
+                              placeholder="Your thoughts about this book"
+                              value={comment}
+                              onChange={(event) =>
+                                setComment(event.currentTarget.value)
+                              }
+                            />
+                            <Button
+                              onClick={() => {
+                                if (rating === 0) {
+                                  NotifyUtils.simple("Please rate the book");
+                                  return;
+                                }
+                                if (comment.trim().length == 0) {
+                                  NotifyUtils.simple("Please leave a review");
+                                  return;
+                                }
+                                reviewMutation.mutate();
+                              }}
+                            >
+                              Leave a review
+                            </Button>
+                          </Stack>
+                        </>
+                      ) : (
+                        <Text c="dimmed">Please log in to leave a review.</Text>
+                      )}
                     </Box>
                   </Flex>
 
@@ -412,31 +491,54 @@ export default function ClientBookDetailPage() {
 
                   {/* Reviews list */}
                   <Stack gap="md">
-                    {MOCK_REVIEW_DATA.reviews.map((review: any) => (
+                    {reviewPage?.pageData.data.map((review: ReviewResponse) => (
                       <Paper key={review.id} p="md" withBorder>
                         <Group mb="xs">
-                          <Group>
-                            <Avatar src={review.avatar} radius="xl" size="md" />
-                            <Box>
-                              <Text fw={500}>{review.author}</Text>
-                              <Group gap={4}>
-                                <Rating
-                                  value={review.rating}
-                                  readOnly
-                                  size="xs"
-                                />
-                                <Text fz="xs" c="dimmed">
-                                  {review.date}
-                                </Text>
-                              </Group>
-                            </Box>
-                          </Group>
+                          <Avatar
+                            key={
+                              review.user.firstName + " " + review.user.lastName
+                            }
+                            name={
+                              review.user.firstName + " " + review.user.lastName
+                            }
+                            radius="xl"
+                            size="md"
+                          />
+
+                          <Box>
+                            <Text fw={500}>
+                              {review.user.firstName +
+                                " " +
+                                review.user.lastName}
+                            </Text>
+                            <Group gap={4}>
+                              <Rating
+                                value={review.rating}
+                                readOnly
+                                size="xs"
+                              />
+                              <Text fz="xs" c="dimmed">
+                                {DateUtils.convertTimestampToUTC(
+                                  review.updatedAt
+                                )}
+                              </Text>
+                            </Group>
+                          </Box>
                         </Group>
                         <Text fz="sm" c="dimmed">
-                          {review.content}
+                          {review.comment}
                         </Text>
                       </Paper>
                     ))}
+                    {reviewPage && (
+                      <Pagination
+                        value={activePage}
+                        total={reviewPage.pageData.totalPages}
+                        onChange={(page: number) =>
+                          page !== activePage && setActivePage(page)
+                        }
+                      />
+                    )}
                   </Stack>
                 </Box>
               </Tabs.Panel>

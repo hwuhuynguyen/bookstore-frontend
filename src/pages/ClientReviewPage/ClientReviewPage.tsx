@@ -1,47 +1,105 @@
-import { Card, ColorSwatch, Container, Grid, Group, Pagination, Skeleton, Stack, Text, Title, useMantineTheme } from "@mantine/core";
+import { Card, Container, Grid, Group, Pagination, Skeleton, Stack, Text, Title, useMantineTheme } from "@mantine/core";
 import UserNavbar from "../../components/UserNavbar";
 import { useState } from "react";
 import ReviewCard from "../../components/ReviewCard";
+import { useQuery } from "@tanstack/react-query";
+import FetchUtils, { ErrorMessage, ListResponse } from "../../utils/FetchUtils";
+import { ReviewResponse } from "../../models/Review";
+import ResourceURL from "../../constants/ResourceURL";
+import { IconAlertTriangle, IconMoodAnnoyed } from "@tabler/icons-react";
 
 function ClientReviewPage() {
-  const theme = useMantineTheme()
-  const [isLoading, setIsLoading] = useState(false);
-  const [activePage, setActivePage]= useState(0)
-  const reviews: any = [{}, {}, {}]
+  const theme = useMantineTheme();
+  const [activePage, setActivePage] = useState(1);
+
+  const requestParams = {
+    size: 5,
+    page: activePage - 1,
+    sort: "updatedAt,desc",
+  };
+
+  const {
+    data: reviewResponses,
+    isLoading: isLoadingReviewResponses,
+    isError: isErrorReviewResponses,
+  } = useQuery<ListResponse<ReviewResponse>, ErrorMessage>({
+    queryKey: ["client-api", "reviews", "getMyReviews", requestParams],
+    queryFn: () =>
+      FetchUtils.getWithToken<ListResponse<ReviewResponse>>(
+        ResourceURL.CLIENT_GET_MY_REVIEWS,
+        requestParams
+      ),
+    refetchOnWindowFocus: false,
+  });
+
+  const reviews = reviewResponses as ListResponse<ReviewResponse>;
 
   let reviewContentFragment;
 
-  if (isLoading) {
+  if (isLoadingReviewResponses) {
     reviewContentFragment = (
       <Stack>
-        {Array(5).fill(0).map((_, index) => (
-          <Skeleton key={index} height={50} radius="md"/>
-        ))}
+        {Array(5)
+          .fill(0)
+          .map((_, index) => (
+            <Skeleton key={index} height={50} radius="md" />
+          ))}
       </Stack>
     );
   }
 
-  if (reviews && reviews.length > 0) {
+  if (isErrorReviewResponses) {
+    reviewContentFragment = (
+      <Stack
+        my={theme.spacing.xl}
+        style={{ alignItems: "center", color: theme.colors.pink[6] }}
+      >
+        <IconAlertTriangle size={125} strokeWidth={1} />
+        <Text size="xl" fw={500}>
+          Error occurred while fetching data
+        </Text>
+      </Stack>
+    );
+  }
+
+  if (reviews && reviews.totalElements === 0) {
+    reviewContentFragment = (
+      <Stack
+        my={theme.spacing.xl}
+        style={{ alignItems: "center", color: theme.colors.blue[5] }}
+      >
+        <IconMoodAnnoyed size={125} strokeWidth={1} />
+        <Text size="xl" fw={500}>
+          No review yet
+        </Text>
+      </Stack>
+    );
+  }
+
+  if (reviews && reviews.totalElements > 0) {
     reviewContentFragment = (
       <>
         <Stack gap="xs">
-          {reviews.map((review:any) => <ReviewCard key={review.reviewId} review={review}/>)}
+          {reviews?.data?.map((review) => (
+            <ReviewCard key={review.id} review={review} />
+          ))}
         </Stack>
-
         <Group justify="space-between" mt={theme.spacing.lg}>
           <Pagination
-            total={100}
-            onChange={(page: number) => (page !== activePage) && setActivePage(page)}
+            value={activePage}
+            total={reviews.totalPages}
+            onChange={(page: number) =>
+              page !== activePage && setActivePage(page)
+            }
           />
-          <Text>
-            <Text component="span" >Page {activePage}</Text>
-            <span> / {100}</span>
+          <Text component="span">
+            Page {activePage} / {reviews.totalPages}
           </Text>
         </Group>
       </>
     );
   }
-
+  
   return (
     <main>
       <Container size="xl">
