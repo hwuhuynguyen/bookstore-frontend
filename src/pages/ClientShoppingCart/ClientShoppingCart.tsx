@@ -18,9 +18,11 @@ import {
   Skeleton,
   Modal,
   TextInput,
+  useMantineTheme,
 } from "@mantine/core";
 import {
   IconAlertTriangle,
+  IconMoodAnnoyed,
   IconShoppingCart,
   IconTrash,
 } from "@tabler/icons-react";
@@ -39,6 +41,7 @@ import { useNavigate } from "react-router-dom";
 import NotifyUtils from "../../utils/NotifyUtils";
 
 export default function ClientShoppingCart() {
+  const theme = useMantineTheme();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const {
@@ -186,13 +189,14 @@ export default function ClientShoppingCart() {
   // Handle checkout
   const handleCheckout = () => {
     if (selectedAddress?.id) {
-
       checkoutMutation.mutate({
         addressId: selectedAddress?.id,
         paymentTypeId: parseInt(paymentMethod),
       });
     } else {
-      NotifyUtils.simpleFailed("Please add your shipping address to complete the order.")
+      NotifyUtils.simpleFailed(
+        "Please add your shipping address to complete the order."
+      );
     }
   };
 
@@ -266,7 +270,27 @@ export default function ClientShoppingCart() {
     );
   }
 
-  if (cartResponse) {
+  if (cartResponse && cartResponse.cartItems.length == 0) {
+    cartContentFragment = (
+      <Table.Tbody>
+        <Table.Tr>
+          <Table.Td colSpan={5}>
+            <Stack
+              my={theme.spacing.xl}
+              style={{ alignItems: "center", color: theme.colors.blue[5] }}
+            >
+              <IconMoodAnnoyed size={125} strokeWidth={1} />
+              <Text size="xl" fw={500}>
+                Cart is empty
+              </Text>
+            </Stack>
+          </Table.Td>
+        </Table.Tr>
+      </Table.Tbody>
+    );
+  }
+
+  if (cartResponse && cartResponse.cartItems.length > 0) {
     cartContentFragment = (
       <Table.Tbody>
         {[...(cart?.cartItems ?? [])]
