@@ -1,7 +1,12 @@
 export interface AuthorResponse {
   id: string;
   name: string;
-  avatar: string;
+  totalBooks: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AuthorRequest {
+  id: string;
+  name: string;
 }

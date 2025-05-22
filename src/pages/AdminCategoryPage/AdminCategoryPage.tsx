@@ -59,7 +59,7 @@ const AdminCategoryPage = () => {
     queryKey: ["client-api", "categories", "getAllCategories", requestParams],
     queryFn: () =>
       FetchUtils.get<ListResponse<CategoryResponse>>(
-        ResourceURL.CLIENT_CATEGORY,
+        `${ResourceURL.CLIENT_CATEGORY}/all`,
         requestParams
       ),
     refetchOnWindowFocus: false,
