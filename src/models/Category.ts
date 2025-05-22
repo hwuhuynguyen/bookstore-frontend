@@ -5,8 +5,6 @@ export interface CategoryResponse {
   createdAt: string;
   updatedAt: string;
 }
-
-
 export interface CategoryRequest {
   id: string;
   name: string;

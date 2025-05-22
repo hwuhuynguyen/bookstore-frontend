@@ -21,14 +21,18 @@ import {
   IconAlertTriangle,
   IconEye,
   IconEdit,
+  IconTrash,
 } from "@tabler/icons-react";
 import FetchUtils, { ErrorMessage, ListResponse } from "../../utils/FetchUtils";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import ResourceURL from "../../constants/ResourceURL";
 import DateUtils from "../../utils/DateUtils";
-import { AuthorResponse } from "../../models/Author";
+import { AuthorRequest, AuthorResponse } from "../../models/Author";
+import NotifyUtils from "../../utils/NotifyUtils";
+import { useDebouncedValue } from "@mantine/hooks";
 const AdminAuthorPage = () => {
   const theme = useMantineTheme();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [activePage, setActivePage] = useState(1);
 
@@ -36,12 +40,16 @@ const AdminAuthorPage = () => {
   const [selectedAuthor, setSelectedAuthor] = useState<AuthorResponse | null>(
     null
   ); // Selected author for update
-  const [modalMode, setModalMode] = useState<"view" | "edit">("view");
+  const [modalMode, setModalMode] = useState<"view" | "edit" | "create">(
+    "view"
+  );
+  const [debouncedSearchQuery] = useDebouncedValue(searchQuery, 500);
 
   const requestParams = {
     size: 10,
     page: activePage - 1,
     sort: "name,asc",
+    search: debouncedSearchQuery,
   };
 
   const {
@@ -57,6 +65,51 @@ const AdminAuthorPage = () => {
         true
       ),
     refetchOnWindowFocus: false,
+  });
+
+  const updateAuthorMutation = useMutation({
+    mutationFn: (author: AuthorRequest) =>
+      FetchUtils.putWithToken(
+        `${ResourceURL.AUTHOR_BASE}/${author.id}`,
+        author,
+        true
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["client-api", "authors"] });
+      setViewUpdateModal(false);
+      NotifyUtils.simpleSuccess("This author is updated successfully.");
+    },
+    onError: () => {
+      NotifyUtils.simpleFailed(
+        "Failed to update this author. Please try again later."
+      );
+    },
+  });
+
+  const createAuthorMutation = useMutation({
+    mutationFn: (author: AuthorRequest) =>
+      FetchUtils.postWithToken(ResourceURL.AUTHOR_BASE, author, true),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["client-api", "authors"] });
+      setViewUpdateModal(false);
+      NotifyUtils.simpleSuccess("New author added successfully.");
+    },
+    onError: () => {
+      NotifyUtils.simpleFailed("Failed to add author. Please try again later.");
+    },
+  });
+
+  const deleteAuthorMutation = useMutation({
+    mutationFn: (id: string) =>
+      FetchUtils.deleteWithToken(`${ResourceURL.AUTHOR_BASE}/${id}`, {}, true),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["client-api", "authors"] });
+      setViewUpdateModal(false);
+      NotifyUtils.simpleSuccess("Author deleted successfully.");
+    },
+    onError: () => {
+      NotifyUtils.simpleFailed("Failed to delete author. Please try again.");
+    },
   });
 
   const authors = authorResponses as ListResponse<AuthorResponse>;
@@ -95,10 +148,11 @@ const AdminAuthorPage = () => {
             <Table.Tr>
               <Table.Th style={{ width: "5%" }}>No.</Table.Th>
               <Table.Th style={{ width: "25%" }}>Author ID</Table.Th>
-              <Table.Th style={{ width: "25%" }}>Name</Table.Th>
-              <Table.Th style={{ width: "15%" }}>Created at</Table.Th>
-              <Table.Th style={{ width: "15%" }}>Updated at</Table.Th>
-              <Table.Th style={{ width: "15%", textAlign: "center" }}>
+              <Table.Th style={{ width: "20%" }}>Name</Table.Th>
+              <Table.Th style={{ width: "14%" }}>Total books</Table.Th>
+              <Table.Th style={{ width: "12%" }}>Created at</Table.Th>
+              <Table.Th style={{ width: "12%" }}>Updated at</Table.Th>
+              <Table.Th style={{ width: "12%", textAlign: "center" }}>
                 Actions
               </Table.Th>
             </Table.Tr>
@@ -111,6 +165,7 @@ const AdminAuthorPage = () => {
                 </Table.Td>
                 <Table.Td>{author.id}</Table.Td>
                 <Table.Td>{author.name}</Table.Td>
+                <Table.Td>{author.totalBooks}</Table.Td>
                 <Table.Td>
                   {DateUtils.convertTimestampToUTC(author.createdAt)}
                 </Table.Td>
@@ -118,7 +173,7 @@ const AdminAuthorPage = () => {
                   {DateUtils.convertTimestampToUTC(author.updatedAt)}
                 </Table.Td>
                 <Table.Td>
-                  <Group gap="xs" justify="center">
+                  <Group gap="xs" justify="flex-start">
                     <Tooltip label="View details">
                       <ActionIcon
                         variant="subtle"
@@ -145,6 +200,19 @@ const AdminAuthorPage = () => {
                         <IconEdit size={16} />
                       </ActionIcon>
                     </Tooltip>
+                    {author.totalBooks == 0 && (
+                      <Tooltip label="Delete author">
+                        <ActionIcon
+                          variant="subtle"
+                          radius={"md"}
+                          onClick={() => {
+                            deleteAuthorMutation.mutate(author.id);
+                          }}
+                        >
+                          <IconTrash size={16} />
+                        </ActionIcon>
+                      </Tooltip>
+                    )}
                   </Group>
                 </Table.Td>
               </Table.Tr>
@@ -179,6 +247,17 @@ const AdminAuthorPage = () => {
               leftSection={<IconPlus size={16} />}
               color="blue"
               radius="md"
+              onClick={() => {
+                setSelectedAuthor({
+                  id: "",
+                  name: "",
+                  createdAt: "",
+                  updatedAt: "",
+                  totalBooks: 0,
+                });
+                setModalMode("create");
+                setViewUpdateModal(true);
+              }}
             >
               Add new author
             </Button>
@@ -207,10 +286,12 @@ const AdminAuthorPage = () => {
       >
         {selectedAuthor ? (
           <Stack>
-            <TextInput label="Author ID" value={selectedAuthor.id} disabled />
+            {modalMode !== "create" && (
+              <TextInput label="Author ID" value={selectedAuthor.id} disabled />
+            )}
 
             <TextInput
-              label="Author Name"
+              label="Author name"
               value={selectedAuthor.name}
               onChange={(e) =>
                 setSelectedAuthor({
@@ -221,16 +302,45 @@ const AdminAuthorPage = () => {
               disabled={modalMode === "view"}
             />
 
-            <TextInput
-              label="Created At"
-              value={DateUtils.convertTimestampToUTC(selectedAuthor.createdAt)}
-              disabled
-            />
+            {modalMode !== "create" && (
+              <TextInput
+                label="Created at"
+                value={DateUtils.convertTimestampToUTC(
+                  selectedAuthor.createdAt
+                )}
+                disabled
+              />
+            )}
+            {modalMode !== "create" && (
+              <TextInput
+                label="Updated at"
+                value={DateUtils.convertTimestampToUTC(
+                  selectedAuthor.updatedAt
+                )}
+                disabled
+              />
+            )}
 
-            {modalMode === "edit" && (
-              <Group justify="center" mt="md">
+            {modalMode !== "view" ? (
+              <Group justify="center" mt="md" grow>
                 <Button
                   color="green"
+                  size="md"
+                  radius="md"
+                  onClick={() => {
+                    if (selectedAuthor) {
+                      if (modalMode === "edit") {
+                        updateAuthorMutation.mutate(selectedAuthor);
+                      } else if (modalMode === "create") {
+                        createAuthorMutation.mutate(selectedAuthor);
+                      }
+                    }
+                  }}
+                >
+                  Save
+                </Button>
+                <Button
+                  variant="outline"
                   size="md"
                   radius="md"
                   onClick={() => {
@@ -238,7 +348,20 @@ const AdminAuthorPage = () => {
                     setViewUpdateModal(false);
                   }}
                 >
-                  Save Changes
+                  Cancel
+                </Button>
+              </Group>
+            ) : (
+              <Group justify="center" mt="md" grow>
+                <Button
+                  size="md"
+                  radius="md"
+                  onClick={() => {
+                    // Save logic here
+                    setViewUpdateModal(false);
+                  }}
+                >
+                  Close
                 </Button>
               </Group>
             )}
