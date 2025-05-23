@@ -43,7 +43,11 @@ import NotifyUtils from "../../utils/NotifyUtils";
 import ClientRelatedBooks from "./ClientRelatedBooks";
 import DateUtils from "../../utils/DateUtils";
 import { WishlistRequest } from "../../models/Wishlist";
-import { RatingDistributionItem, ReviewPageWrapper, ReviewResponse } from "../../models/Review";
+import {
+  RatingDistributionItem,
+  ReviewPageWrapper,
+  ReviewResponse,
+} from "../../models/Review";
 
 export default function ClientBookDetailPage() {
   const theme = useMantineTheme();
@@ -126,7 +130,8 @@ export default function ClientBookDetailPage() {
     queryKey: ["reviews", book?.id, reviewRequestParams],
     queryFn: () =>
       FetchUtils.get<ReviewPageWrapper>(
-        `${ResourceURL.REVIEW_BASE}/book/${book?.id}`, reviewRequestParams
+        `${ResourceURL.REVIEW_BASE}/book/${book?.id}`,
+        reviewRequestParams
       ),
     enabled: !!book,
   });
@@ -206,16 +211,16 @@ export default function ClientBookDetailPage() {
             </Group>
 
             <Group mb="md" align="center">
-              {book?.authors.map((author) => (
-                <AvatarGroup>
+              <AvatarGroup>
+                {book?.authors.map((author) => (
                   <Avatar
                     key={author.name}
                     name={author.name}
                     radius="xl"
                     size="md"
                   />
-                </AvatarGroup>
-              ))}
+                ))}
+              </AvatarGroup>
               <Box>
                 <Text size="xs" c="dimmed">
                   Author
@@ -407,7 +412,8 @@ export default function ClientBookDetailPage() {
                               </Text>
                               <Progress
                                 value={
-                                  (item.count / reviewPage.pageData.totalElements) *
+                                  (item.count /
+                                    reviewPage.pageData.totalElements) *
                                   100
                                 }
                                 size="sm"
