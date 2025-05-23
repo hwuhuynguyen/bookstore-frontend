@@ -1,7 +1,7 @@
 export interface AuthorResponse {
   id: string;
   name: string;
-  totalBooks: number;
+  totalBooks?: number;
   createdAt: string;
   updatedAt: string;
 }

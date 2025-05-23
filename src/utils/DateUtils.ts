@@ -1,6 +1,10 @@
 class DateUtils {
   static convertTimestampToUTC(dateStr: string): string {
+    if (!dateStr) return "";
+
     const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return "";
+
     // Convert to Vietnam time (UTC+7)
     const vnOffset = 7 * 60; // 7 hours in minutes
     const localTime = new Date(date.getTime() + vnOffset * 60 * 1000);
@@ -17,8 +21,11 @@ class DateUtils {
   }
 
   static convertTimestampToDate(dateStr: string): string {
+    if (!dateStr) return ""; // or return 'N/A'
+
     const date = new Date(dateStr);
-    // Convert to Vietnam time (UTC+7)
+    if (isNaN(date.getTime())) return ""; // invalid date check
+
     const vnOffset = 7 * 60; // 7 hours in minutes
     const localTime = new Date(date.getTime() + vnOffset * 60 * 1000);
 

@@ -37,6 +37,10 @@ class ApplicationConstants {
       value: "3",
       label: "GoodReads",
     },
+    {
+      value: "4",
+      label: "System"
+    }
   ];
 
   static ORDER_STATUSES = [
