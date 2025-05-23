@@ -7,6 +7,7 @@ import AdminOrderPage from "../pages/AdminOrderPage";
 import AdminUserPage from "../pages/AdminUserPage";
 import AdminAuthorPage from "../pages/AdminAuthorPage";
 import ErrorNotFoundPage from "../pages/ErrorNotFoundPage";
+import AdminInventoryPage from "../pages/AdminInventoryPage";
 
 export const protectedRoutes: RouteObject[] = [
   {
@@ -40,6 +41,10 @@ export const protectedRoutes: RouteObject[] = [
       {
         path: "users",
         element: <AdminUserPage />,
+      },
+      {
+        path: "inventory",
+        element: <AdminInventoryPage />,
       },
       {
         path: "*",

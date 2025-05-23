@@ -12,7 +12,7 @@ class ResourceURL {
   static USER_BASE = apiPath + "/users";
   static CLIENT_USER_INFO = this.USER_BASE + "/personal-info";
   static CLIENT_USER_ADDRESS = this.CLIENT_USER_INFO + "/address";
-  static CLIENT_USER_PASSWORD = this.CLIENT_USER_INFO + "/password"
+  static CLIENT_USER_PASSWORD = this.CLIENT_USER_INFO + "/password";
 
   static CLIENT_BOOK = apiPath + "/books";
   static CLIENT_CATEGORY = apiPath + "/categories";
@@ -32,10 +32,13 @@ class ResourceURL {
   static REVIEW_BASE = apiPath + "/review";
   static CLIENT_GET_MY_REVIEWS = this.REVIEW_BASE + "/my-reviews";
 
+  static INVENTORY_BASE = apiPath + "/inventory";
+
   // --- ADMIN ROUTE ---
   static ADMIN_GET_ALL_ORDERS = this.CLIENT_ORDER + "/all-orders";
   static ADMIN_GET_ALL_USERS = this.USER_BASE + "/all";
   static ADMIN_GET_ALL_AUTHORS = this.AUTHOR_BASE + "/all";
+  static ADMIN_GET_ALL_INVENTORY = this.INVENTORY_BASE + "/all";
 }
 
 export default ResourceURL;

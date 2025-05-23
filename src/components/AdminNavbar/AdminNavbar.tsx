@@ -2,7 +2,6 @@ import { Button, Stack } from "@mantine/core";
 import { Link, useLocation } from "react-router-dom";
 import {
   Icon,
-  IconAddressBook,
   IconBox,
   IconBuildingWarehouse,
   IconCategory,
@@ -25,11 +24,6 @@ const navbarLinks: NavbarLink[] = [
     link: "/admin/dashboard",
     label: "Dashboard",
     icon: IconHome,
-  },
-  {
-    link: "/admin/address",
-    label: "Address",
-    icon: IconAddressBook,
   },
   {
     link: "/admin/users",
