@@ -95,9 +95,10 @@ export default function ClientShoppingCart() {
       });
 
       updateUser({ ...data, addresses: sortedAddresses });
+      NotifyUtils.simpleSuccess("New address is saved successfully.");
     },
     onError: (error) => {
-      console.error("Error creating address:", error);
+      NotifyUtils.simpleFailed("Error creating address:" + error.message);
     },
   });
 
@@ -193,6 +194,7 @@ export default function ClientShoppingCart() {
         addressId: selectedAddress?.id,
         paymentTypeId: parseInt(paymentMethod),
       });
+      NotifyUtils.simpleSuccess("New order is placed successfully.");
     } else {
       NotifyUtils.simpleFailed(
         "Please add your shipping address to complete the order."

@@ -390,11 +390,11 @@ const AdminOrderPage = () => {
                   radius="md"
                   style={{ padding: "10px 20px", fontWeight: "bold" }}
                   onClick={() => {
-                    setNewStatus("COMPLETED");
+                    setNewStatus("DELIVERING");
                     handleStatusUpdate(selectedOrder.id);
                   }}
                 >
-                  Confirm Order
+                  Confirm
                 </Button>
                 <Button
                   color="red"

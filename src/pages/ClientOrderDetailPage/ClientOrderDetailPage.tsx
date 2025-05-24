@@ -19,7 +19,7 @@ import UserNavbar from "../../components/UserNavbar";
 import OrderItemRow from "../../components/OrderItemRow";
 import StatusUtils from "../../utils/StatusUtils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { OrderResponse } from "../../models/Order";
+import { OrderResponse, UpdateOrderStatusRequest } from "../../models/Order";
 import FetchUtils, { ErrorMessage } from "../../utils/FetchUtils";
 import ResourceURL from "../../constants/ResourceURL";
 import DateUtils from "../../utils/DateUtils";
@@ -60,6 +60,30 @@ function ClientOrderDetailPage() {
 
   const handleCancelOrder = () => {
     if (orderId) cancelOrder.mutate(orderId);
+  };
+
+  const updateOrderStatus = useMutation<
+    OrderResponse,
+    ErrorMessage,
+    UpdateOrderStatusRequest
+  >({
+    mutationFn: (request: UpdateOrderStatusRequest) =>
+      FetchUtils.putWithToken(
+        `${ResourceURL.CLIENT_ORDER}/${request.orderStatus}/status`,
+        { orderStatus: "COMPLETED" },
+        true
+      ),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["client-api", "getOrderDetail", orderId],
+      });
+      NotifyUtils.simpleSuccess("This order's status is updated successfully.");
+    },
+  });
+
+  const handleStatusUpdate = (orderId: string) => {
+    updateOrderStatus.mutate({ orderStatus: orderId });
   };
 
   const order = orderResponse as OrderResponse;
@@ -245,6 +269,17 @@ function ClientOrderDetailPage() {
               onClick={handleCancelOrder}
             >
               Cancel order
+            </Button>
+          )}
+          {ApplicationConstants.DELIVERING_STATUS === order.orderStatus && (
+            <Button
+              color="green"
+              variant="light"
+              radius="md"
+              style={{ width: "fit-content" }}
+              onClick={() => handleStatusUpdate(order.id)}
+            >
+              Mark as Completed
             </Button>
           )}
         </Group>
