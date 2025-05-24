@@ -15,6 +15,12 @@ class StatusUtils {
             Processing
           </Badge>
         );
+      case "DELIVERING":
+        return (
+          <Badge color="cyan" variant="filled">
+            Delivering
+          </Badge>
+        );
       case "COMPLETED":
         return (
           <Badge color="green" variant="filled">

@@ -39,18 +39,21 @@ class ApplicationConstants {
     },
     {
       value: "4",
-      label: "System"
-    }
+      label: "System",
+    },
   ];
 
   static ORDER_STATUSES = [
     "PENDING",
     "PROCESSING",
+    "DELIVERING",
     "COMPLETED",
     "CANCELLED",
   ];
 
   static CANCELABLE_STATUSES = ["PENDING", "PROCESSING"];
+
+  static DELIVERING_STATUS = "DELIVERING";
 
   static PAYMENT_STATUSES = [
     "PENDING",
