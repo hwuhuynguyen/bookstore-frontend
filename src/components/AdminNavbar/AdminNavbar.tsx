@@ -8,7 +8,6 @@ import {
   IconFileBarcode,
   IconFingerprint,
   IconHome,
-  IconMessage,
   IconUser,
 } from "@tabler/icons-react";
 
@@ -56,13 +55,6 @@ const navbarLinks: NavbarLink[] = [
     label: "Orders",
     icon: IconFileBarcode,
   },
-  
-  {
-    link: "/admin/review",
-    label: "Reviews",
-    icon: IconMessage,
-  },
-  
 ];
 
 export default function AdminNavbar() {

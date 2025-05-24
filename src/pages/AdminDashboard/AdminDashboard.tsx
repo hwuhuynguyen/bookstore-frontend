@@ -1,5 +1,4 @@
 import {
-  Container,
   Title,
   Grid,
   Card,
@@ -20,61 +19,61 @@ import {
 import {
   Bar,
   BarChart,
+  Cell,
   Line,
   LineChart,
+  Pie,
+  PieChart,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import { useQuery } from "@tanstack/react-query";
+import FetchUtils, { ErrorMessage } from "../../utils/FetchUtils";
+import { DashboardResponse } from "../../models/Dashboard";
+import ResourceURL from "../../constants/ResourceURL";
 
 const dateReducerForStatisticResources = (statisticResources: any[]) =>
   statisticResources.map((statisticResource) => ({
-    date: statisticResource.date,
-    total: statisticResource.value,
+    date: new Date(statisticResource.date).toLocaleDateString("en-CA"),
+    total: statisticResource.total,
   }));
 
 const AdminDashboard = () => {
   const theme = useMantineTheme();
+  // const isEmptyChartData = (data: any[]) => data.every((d) => d.total === 0);
 
-  const statistic = {
-    totalCustomer: 1200,
-    totalProduct: 450,
-    totalOrder: 320,
-    totalWaybill: 300,
-    totalReview: 150,
-    totalActivePromotion: 5,
-    totalSupplier: 20,
-    totalBrand: 12,
-    statisticRegistration: [
-      { date: "2025-04-01", value: 10 },
-      { date: "2025-04-02", value: 15 },
-      { date: "2025-04-03", value: 20 },
-    ],
-    statisticOrder: [
-      { date: "2025-04-01", value: 25 },
-      { date: "2025-04-02", value: 30 },
-      { date: "2025-04-03", value: 35 },
-    ],
-    statisticReview: [
-      { date: "2025-04-01", value: 5 },
-      { date: "2025-04-02", value: 8 },
-      { date: "2025-04-03", value: 6 },
-      { date: "2025-04-03", value: 6 },
-      { date: "2025-04-03", value: 6 },
-      { date: "2025-04-03", value: 6 },
-      { date: "2025-04-03", value: 6 },
-      { date: "2025-04-03", value: 6 },
-      { date: "2025-04-03", value: 6 },
-    ],
-    statisticWaybill: [
-      { date: "2025-04-01", value: 22 },
-      { date: "2025-04-02", value: 28 },
-      { date: "2025-04-03", value: 26 },
-    ],
+  const defaultStatisticResponse: DashboardResponse = {
+    totalUsers: 0,
+    totalBooks: 0,
+    totalOrders: 0,
+    totalCategories: 0,
+    totalReviews: 0,
+    totalAuthors: 0,
+    totalCashPayments: 0,
+    totalOnlinePayments: 0,
+    statisticRegistration: [],
+    statisticOrder: [],
+    statisticReview: [],
   };
 
+  const { data: statisticResponse } = useQuery<DashboardResponse, ErrorMessage>(
+    {
+      queryKey: ["api", "stats", "getStatistic"],
+      queryFn: () =>
+        FetchUtils.getWithToken<DashboardResponse>(
+          ResourceURL.ADMIN_DASHBOARD,
+          {},
+          true
+        ),
+      placeholderData: defaultStatisticResponse,
+    }
+  );
+
+  const statistic = statisticResponse as DashboardResponse;
+
   return (
-    <Container size="xl">
+    <>
       <Stack>
         <Card radius="md" shadow="lg" p="lg" mb="md" withBorder>
           <Title order={2}>Dashboard</Title>
@@ -89,7 +88,7 @@ const AdminDashboard = () => {
               <Grid.Col span={3}>
                 <OverviewCard
                   title="Total users"
-                  number={statistic.totalCustomer}
+                  number={statistic.totalUsers}
                   color="blue"
                   icon={IconUsers}
                 />
@@ -97,7 +96,7 @@ const AdminDashboard = () => {
               <Grid.Col span={3}>
                 <OverviewCard
                   title="Total books"
-                  number={statistic.totalProduct}
+                  number={statistic.totalBooks}
                   color="orange"
                   icon={IconBox}
                 />
@@ -105,7 +104,7 @@ const AdminDashboard = () => {
               <Grid.Col span={3}>
                 <OverviewCard
                   title="Total orders"
-                  number={statistic.totalOrder}
+                  number={statistic.totalOrders}
                   color="teal"
                   icon={IconFileBarcode}
                 />
@@ -113,23 +112,23 @@ const AdminDashboard = () => {
               <Grid.Col span={3}>
                 <OverviewCard
                   title="Total reviews"
-                  number={statistic.totalReview}
+                  number={statistic.totalReviews}
                   color="yellow"
                   icon={IconStar}
                 />
               </Grid.Col>
-              <Grid.Col span={3}>
+              {/* <Grid.Col span={3}>
                 <OverviewCard
                   title="Total publishers"
-                  number={statistic.totalSupplier}
+                  number={statistic.totalAuthors}
                   color="violet"
                   icon={IconBuildingWarehouse}
                 />
-              </Grid.Col>
+              </Grid.Col> */}
               <Grid.Col span={3}>
                 <OverviewCard
                   title="Total authors"
-                  number={statistic.totalSupplier}
+                  number={statistic.totalAuthors}
                   color="grape"
                   icon={IconBuildingWarehouse}
                 />
@@ -137,7 +136,7 @@ const AdminDashboard = () => {
               <Grid.Col span={3}>
                 <OverviewCard
                   title="Total categories"
-                  number={statistic.totalSupplier}
+                  number={statistic.totalCategories}
                   color="indigo"
                   icon={IconBuildingWarehouse}
                 />
@@ -159,9 +158,13 @@ const AdminDashboard = () => {
                       last 7 days
                     </Text>
                   </Group>
-
+                  {/* {isEmptyChartData(statistic.statisticRegistration) ? (
+                    <Text ta="center" color="dimmed">
+                      No data available
+                    </Text>
+                  ) : ( */}
                   <LineChart
-                    width={400}
+                    width={500}
                     height={275}
                     data={dateReducerForStatisticResources(
                       statistic.statisticRegistration
@@ -169,7 +172,7 @@ const AdminDashboard = () => {
                     margin={{ top: 10, right: 5, bottom: 0, left: -10 }}
                   >
                     <XAxis dataKey="date" />
-                    <YAxis />
+                    <YAxis dataKey="total" />
                     <Tooltip />
                     <Line
                       name="Number of registrations"
@@ -193,7 +196,7 @@ const AdminDashboard = () => {
                   </Group>
 
                   <LineChart
-                    width={400}
+                    width={500}
                     height={275}
                     data={dateReducerForStatisticResources(
                       statistic.statisticReview
@@ -201,7 +204,7 @@ const AdminDashboard = () => {
                     margin={{ top: 10, right: 5, bottom: 0, left: -10 }}
                   >
                     <XAxis dataKey="date" />
-                    <YAxis />
+                    <YAxis dataKey="total" />
                     <Tooltip />
                     <Line
                       name="Number of reviews"
@@ -228,7 +231,7 @@ const AdminDashboard = () => {
                   </Group>
 
                   <BarChart
-                    width={400}
+                    width={500}
                     height={275}
                     data={dateReducerForStatisticResources(
                       statistic.statisticOrder
@@ -236,7 +239,7 @@ const AdminDashboard = () => {
                     margin={{ top: 10, right: 5, bottom: 0, left: -10 }}
                   >
                     <XAxis dataKey="date" />
-                    <YAxis />
+                    <YAxis dataKey="total" />
                     <Tooltip />
                     <Bar
                       name="Number of orders"
@@ -246,11 +249,47 @@ const AdminDashboard = () => {
                   </BarChart>
                 </Stack>
               </Paper>
+              <Paper shadow="xs" p="md">
+                <Stack>
+                  <Group justify="space-between">
+                    <Text size="lg" fw={500} color="dimmed">
+                      Payment Method Ratio
+                    </Text>
+                    <Text size="sm" color="dimmed">
+                      All time
+                    </Text>
+                  </Group>
+
+                  <PieChart width={500} height={275}>
+                    <Tooltip />
+                    <Pie
+                      dataKey="value"
+                      data={[
+                        {
+                          name: "Cash on Delivery",
+                          value: statistic.totalCashPayments,
+                        },
+                        {
+                          name: "Online Payment",
+                          value: statistic.totalOnlinePayments,
+                        },
+                      ]}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={90}
+                      label
+                    >
+                      <Cell fill={theme.colors.teal[6]} />
+                      <Cell fill={theme.colors.orange[6]} />
+                    </Pie>
+                  </PieChart>
+                </Stack>
+              </Paper>
             </Stack>
           </Grid.Col>
         </Grid>
       </Stack>
-    </Container>
+    </>
   );
 };
 

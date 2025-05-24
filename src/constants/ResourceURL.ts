@@ -39,6 +39,8 @@ class ResourceURL {
   static ADMIN_GET_ALL_USERS = this.USER_BASE + "/all";
   static ADMIN_GET_ALL_AUTHORS = this.AUTHOR_BASE + "/all";
   static ADMIN_GET_ALL_INVENTORY = this.INVENTORY_BASE + "/all";
+
+  static ADMIN_DASHBOARD = apiPath + "/dashboard";
 }
 
 export default ResourceURL;
