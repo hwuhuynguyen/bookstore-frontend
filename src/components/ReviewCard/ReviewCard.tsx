@@ -67,7 +67,7 @@ function ReviewCard({ review }: ReviewCardProps) {
               />
               <Anchor
                 component={Link}
-                to={"/book/" + review.book.slug}
+                to={"/books/" + review.book.slug}
                 fw={500}
                 size="sm"
               >

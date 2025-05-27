@@ -4,7 +4,6 @@ import {
   IconBell,
   IconFileBarcode,
   IconHeart,
-  IconMessageCircle,
   IconSettings,
   IconStar,
   IconUser,
@@ -57,7 +56,7 @@ function UserNavbar() {
       ])}
       {navButton("Reviews", "/user/review", IconStar)}
       {navButton("Wishlist", "/user/wishlist", IconHeart)}
-      {navButton("Consultation Requests", "/user/chat", IconMessageCircle)}
+      {/* {navButton("Consultation Requests", "/user/chat", IconMessageCircle)} */}
     </Stack>
   );
 }
