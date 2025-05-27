@@ -34,6 +34,11 @@ class ResourceURL {
 
   static INVENTORY_BASE = apiPath + "/inventory";
 
+  static NOTIFICATION_BASE = apiPath + "/notifications";
+  static CLIENT_NOTIFICATION_INIT_EVENTS =
+    this.NOTIFICATION_BASE + "/init-events";
+  static CLIENT_NOTIFICATION_EVENTS = this.NOTIFICATION_BASE + "/events";
+
   // --- ADMIN ROUTE ---
   static ADMIN_GET_ALL_ORDERS = this.CLIENT_ORDER + "/all-orders";
   static ADMIN_GET_ALL_USERS = this.USER_BASE + "/all";

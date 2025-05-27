@@ -13,7 +13,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { useElementSize } from "@mantine/hooks";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useAuthStore from "../../stores/AuthStore";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -35,8 +35,17 @@ import classes from "./DefaultHeader.module.css";
 import AppLogo from "../AppLogo";
 import NotifyUtils from "../../utils/NotifyUtils";
 import useClientSearchBook from "../../stores/ClientSearchBookStore";
+import useClientSiteStore from "../../stores/ClientSiteStore";
+import {
+  EventInitiationResponse,
+  NotificationResponse,
+} from "../../models/Notification";
+import { useQuery } from "@tanstack/react-query";
+import FetchUtils, { ErrorMessage } from "../../utils/FetchUtils";
+import ResourceURL from "../../constants/ResourceURL";
 
 function DefaultHeader() {
+  useNotificationEvents();
   const theme = useMantineTheme();
   const colorTheme = useMantineColorScheme();
 
@@ -52,22 +61,21 @@ function DefaultHeader() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
-  //   useNotificationEvents();
 
-  //   const { newNotifications } = useClientSiteStore();
+  const { newNotifications } = useClientSiteStore();
 
   const [disabledNotificationIndicator, setDisabledNotificationIndicator] =
     useState(true);
 
-  //   useEffect(() => {
-  //     if (newNotifications.length > 0) {
-  //       setDisabledNotificationIndicator(false);
-  //     }
-  //   }, [newNotifications.length]);
+  useEffect(() => {
+    if (newNotifications.length > 0) {
+      setDisabledNotificationIndicator(false);
+    }
+  }, [newNotifications]);
 
   const handleSearchInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && search.trim() !== "") {
-      updateActiveSearch(search.trim())
+      updateActiveSearch(search.trim());
       navigate("/books");
     }
   };
@@ -84,7 +92,7 @@ function DefaultHeader() {
       setDisabledNotificationIndicator(true);
       navigate("/user/notification");
     } else {
-        NotifyUtils.simple('Please log in to continue with this action.');
+      NotifyUtils.simple("Please log in to continue with this action.");
     }
   };
   return (
@@ -262,7 +270,6 @@ function DefaultHeader() {
               Explore Our Library - What Will You Read Next?
             </Button>
           </Link>
-          
         </Group>
         <Group gap="xs">
           <Badge color="pink" size="xs" variant="filled">
@@ -278,3 +285,109 @@ function DefaultHeader() {
 }
 
 export default DefaultHeader;
+
+function useNotificationEvents() {
+  const { user } = useAuthStore();
+  const { pushNewNotification } = useClientSiteStore();
+  
+  const eventSourceRef = useRef<EventSource | null>(null);
+  const [eventSourceUuid, setEventSourceUuid] = useState<string | null>(null);
+
+  // Query to initialize notification events
+  const { data: initResponse, isSuccess, isError } = useQuery<EventInitiationResponse, ErrorMessage>({
+    queryKey: ["client-api", "notifications/init-events", "initNotificationEvents"],
+    queryFn: () => FetchUtils.getWithToken(ResourceURL.CLIENT_NOTIFICATION_INIT_EVENTS),
+    enabled: !!user,
+    refetchOnWindowFocus: false,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+
+  // Set up EventSource when we get the UUID
+  useEffect(() => {
+    if (isSuccess && initResponse?.eventSourceUuid && user) {
+      setEventSourceUuid(initResponse.eventSourceUuid);
+    }
+  }, [isSuccess, initResponse, user]);
+
+  // Create EventSource connection
+  useEffect(() => {
+    if (!eventSourceUuid || !user) {
+      return;
+    }
+
+    // Close existing connection if any
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+    }
+
+    console.log("Setting up notification event listener...");
+    
+    const eventSource = new EventSource(
+      `${ResourceURL.CLIENT_NOTIFICATION_EVENTS}?eventSourceUuid=${eventSourceUuid}`
+    );
+
+    eventSource.onopen = (event) => {
+      console.log("EventSource connection opened:", event);
+    };
+
+    eventSource.onmessage = (event) => {
+      try {
+        console.log("Received notification:", event.data);
+        const notificationResponse = JSON.parse(event.data) as NotificationResponse;
+        pushNewNotification(notificationResponse);
+      } catch (error) {
+        console.error("Error parsing notification data:", error);
+      }
+    };
+
+    eventSource.onerror = (event) => {
+      console.error("EventSource error:", event);
+      
+      // Check if the connection is closed
+      if (eventSource.readyState === EventSource.CLOSED) {
+        console.log("EventSource connection closed");
+      } else if (eventSource.readyState === EventSource.CONNECTING) {
+        console.log("EventSource reconnecting...");
+      }
+    };
+
+    eventSourceRef.current = eventSource;
+
+    // Cleanup function
+    return () => {
+      console.log("Cleaning up EventSource connection");
+      eventSource.close();
+    };
+  }, [eventSourceUuid, user, pushNewNotification]);
+
+  // Handle initialization errors
+  useEffect(() => {
+    if (isError) {
+      console.error("Failed to initialize notification events.");
+      NotifyUtils.simpleFailed(
+        "Failed to initialize notification events. Please try again later."
+      );
+    }
+  }, [isError]);
+
+  // Cleanup on unmount or user logout
+  useEffect(() => {
+    return () => {
+      if (eventSourceRef.current) {
+        console.log("Component unmounting, closing EventSource");
+        eventSourceRef.current.close();
+      }
+    };
+  }, []);
+
+  // Close connection when user logs out
+  useEffect(() => {
+    if (!user && eventSourceRef.current) {
+      console.log("User logged out, closing EventSource");
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+      setEventSourceUuid(null);
+    }
+  }, [user]);
+}
