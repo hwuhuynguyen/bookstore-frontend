@@ -1,5 +1,5 @@
 class ApplicationConstants {
-  static HOME_PATH = "http://localhost:8080";
+  static HOME_PATH = import.meta.env.VITE_REACT_APP_API_URL;
   static API_PATH = ApplicationConstants.HOME_PATH + "/api";
 
   static DEFAULT_CLIENT_CATEGORY_PAGE_SIZE = 9;
