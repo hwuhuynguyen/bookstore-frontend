@@ -13,6 +13,7 @@ import {
   Tooltip,
   Modal,
   Button,
+  Select,
 } from "@mantine/core";
 import { useState } from "react";
 import {
@@ -29,13 +30,15 @@ import NumberUtils from "../../utils/NumberUtils";
 import DateUtils from "../../utils/DateUtils";
 import NotifyUtils from "../../utils/NotifyUtils";
 import StatusUtils from "../../utils/StatusUtils";
+import ApplicationConstants from "../../constants/ApplicationConstants";
+import { useDebouncedValue } from "@mantine/hooks";
 
 const AdminOrderPage = () => {
   const theme = useMantineTheme();
   const queryClient = useQueryClient();
 
   const [searchQuery, setSearchQuery] = useState("");
-  // const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [activePage, setActivePage] = useState(1);
   const [updateStatusModal, setUpdateStatusModal] = useState(false); // Modal for status update
   const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(
@@ -44,10 +47,14 @@ const AdminOrderPage = () => {
   const [newStatus, setNewStatus] = useState<string>(""); // Selected status for update
   const [modalMode, setModalMode] = useState<"view" | "edit">("view");
 
+  const [debouncedSearch] = useDebouncedValue(searchQuery, 300);
+
   const requestParams = {
     size: 10,
     page: activePage - 1,
     sort: "createdAt,desc",
+    filter: `${statusFilter ? `status:${statusFilter}` : ""}`,
+    search: debouncedSearch,
   };
 
   const {
@@ -235,16 +242,16 @@ const AdminOrderPage = () => {
               leftSection={<IconSearch size={16} />}
               radius="md"
             />
-            {/* <Select
+            <Select
               placeholder="Filter by status"
               value={statusFilter}
               onChange={setStatusFilter}
-              data={statuses.map((status) => ({
+              data={ApplicationConstants.ORDER_STATUSES.map((status) => ({
                 value: status,
                 label: status,
               }))}
               clearable
-            /> */}
+            />
           </Group>
         </Stack>
       </Card>
