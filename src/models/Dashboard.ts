@@ -3,6 +3,11 @@ export interface StatisticResource {
   date: string; // ISO timestamp, e.g., "2025-05-23T00:00:00Z"
 }
 
+export interface StatusStatistic {
+  status: string;
+  total: number;
+}
+
 export interface DashboardResponse {
   totalUsers: number;
   totalBooks: number;
@@ -15,4 +20,5 @@ export interface DashboardResponse {
   statisticRegistration: StatisticResource[];
   statisticOrder: StatisticResource[];
   statisticReview: StatisticResource[];
+  orderStatusStats: StatusStatistic[]; 
 }

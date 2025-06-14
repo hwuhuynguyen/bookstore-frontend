@@ -20,6 +20,7 @@ import {
   Bar,
   BarChart,
   Cell,
+  LabelList,
   Line,
   LineChart,
   Pie,
@@ -55,6 +56,7 @@ const AdminDashboard = () => {
     statisticRegistration: [],
     statisticOrder: [],
     statisticReview: [],
+    orderStatusStats: [],
   };
 
   const { data: statisticResponse } = useQuery<DashboardResponse, ErrorMessage>(
@@ -71,6 +73,28 @@ const AdminDashboard = () => {
   );
 
   const statistic = statisticResponse as DashboardResponse;
+  const statusOrder = [
+    "PENDING",
+    "PROCESSING",
+    "DELIVERING",
+    "COMPLETED",
+    "CANCELLED",
+  ];
+  const statusColors: Record<string, string> = {
+    PENDING: theme.colors.yellow[5],
+    PROCESSING: theme.colors.blue[5],
+    DELIVERING: theme.colors.indigo[5],
+    COMPLETED: theme.colors.green[5],
+    CANCELLED: theme.colors.violet[5],
+  };
+
+  const sortedOrderStatus = statusOrder.map((status) => {
+    const found = statistic.orderStatusStats.find((s) => s.status === status);
+    return {
+      status,
+      total: found ? found.total : 0,
+    };
+  });
 
   return (
     <>
@@ -246,6 +270,44 @@ const AdminDashboard = () => {
                       dataKey="total"
                       fill={theme.colors.teal[5]}
                     />
+                  </BarChart>
+                </Stack>
+              </Paper>
+              <Paper shadow="xs" p="md">
+                <Stack>
+                  <Group justify="space-between">
+                    <Text size="lg" fw={500} color="dimmed">
+                      Order Status Overview
+                    </Text>
+                    <Text size="sm" color="dimmed">
+                      All time
+                    </Text>
+                  </Group>
+
+                  <BarChart
+                    width={500}
+                    height={275}
+                    data={sortedOrderStatus}
+                    margin={{ top: 10, right: 5, bottom: 50, left: -10 }}
+                  >
+                    <XAxis dataKey="status" angle={-45} textAnchor="end" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar
+                      name="Orders"
+                      dataKey="total"
+                      fill={theme.colors.blue[5]}
+                    >
+                      {sortedOrderStatus.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={
+                            statusColors[entry.status] || theme.colors.gray[5]
+                          }
+                        />
+                      ))}
+                      <LabelList dataKey="total" position="top" />
+                    </Bar>
                   </BarChart>
                 </Stack>
               </Paper>
