@@ -26,6 +26,7 @@ import DateUtils from "../../utils/DateUtils";
 import ApplicationConstants from "../../constants/ApplicationConstants";
 import NumberUtils from "../../utils/NumberUtils";
 import NotifyUtils from "../../utils/NotifyUtils";
+import { VnPayResponse } from "../../models/Payment";
 
 function ClientOrderDetailPage() {
   const theme = useMantineTheme();
@@ -83,6 +84,30 @@ function ClientOrderDetailPage() {
 
   const handleStatusUpdate = (orderId: string) => {
     updateOrderStatus.mutate({ orderStatus: orderId });
+  };
+
+  const retryPayment = useMutation({
+    mutationFn: (orderId: string) =>
+      FetchUtils.putWithToken(
+        `${ResourceURL.CLIENT_ORDER}/${orderId}/retry-payment`,
+        {}
+      ) as Promise<VnPayResponse>,
+
+    onSuccess: (data: VnPayResponse) => {
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl; // Redirect to VNPay
+      } else {
+        NotifyUtils.simpleFailed("No payment URL returned.");
+      }
+    },
+
+    onError: (error: ErrorMessage) => {
+      NotifyUtils.simpleFailed(error.message || "Retry payment failed.");
+    },
+  });
+
+  const handleRetryPayment = (orderId: string) => {
+    retryPayment.mutate(orderId);
   };
 
   const order = orderResponse as OrderResponse;
@@ -257,30 +282,47 @@ function ClientOrderDetailPage() {
           >
             Back to Order page
           </Button>
-          {ApplicationConstants.CANCELABLE_STATUSES.includes(
-            order.orderStatus
-          ) && (
-            <Button
-              color="red"
-              variant="light"
-              radius="md"
-              style={{ width: "fit-content" }}
-              onClick={handleCancelOrder}
-            >
-              Cancel order
-            </Button>
-          )}
-          {ApplicationConstants.DELIVERING_STATUS === order.orderStatus && (
-            <Button
-              color="green"
-              variant="light"
-              radius="md"
-              style={{ width: "fit-content" }}
-              onClick={() => handleStatusUpdate(order.id)}
-            >
-              Mark as Completed
-            </Button>
-          )}
+          <Group>
+            {ApplicationConstants.CANCELABLE_STATUSES.includes(
+              order.orderStatus
+            ) && (
+              <Button
+                color="red"
+                variant="light"
+                radius="md"
+                style={{ width: "fit-content" }}
+                onClick={handleCancelOrder}
+              >
+                Cancel order
+              </Button>
+            )}
+            {["FAILED", "PENDING"].includes(order.payment.paymentStatus) &&
+              order.payment.paymentType === "Credit Card" && (
+                <>
+                  <Button
+                    color="blue"
+                    variant="light"
+                    radius="md"
+                    onClick={() => {
+                      if (orderId) handleRetryPayment(orderId);
+                    }}
+                  >
+                    Retry Payment
+                  </Button>
+                </>
+              )}
+            {ApplicationConstants.DELIVERING_STATUS === order.orderStatus && (
+              <Button
+                color="green"
+                variant="light"
+                radius="md"
+                style={{ width: "fit-content" }}
+                onClick={() => handleStatusUpdate(order.id)}
+              >
+                Mark as Completed
+              </Button>
+            )}
+          </Group>
         </Group>
       </Stack>
     );
