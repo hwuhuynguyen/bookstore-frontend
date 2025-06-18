@@ -23,7 +23,6 @@ import {
   IconHeart,
   IconLogin,
   IconLogout,
-  IconMessageCircle,
   IconSearch,
   IconSettings,
   IconShoppingCart,
@@ -224,13 +223,13 @@ function DefaultHeader() {
                 >
                   Favourite
                 </Menu.Item>
-                <Menu.Item
+                {/* <Menu.Item
                   leftSection={<IconMessageCircle size={14} />}
                   component={Link}
                   to="/user/chat"
                 >
                   Chat with admin
-                </Menu.Item>
+                </Menu.Item> */}
                 <Menu.Item
                   color="pink"
                   leftSection={<IconLogout size={14} />}

@@ -71,19 +71,10 @@ function AdminLayout() {
               </Menu.Target>
               {user && (
                 <Menu.Dropdown>
-                  <Menu.Item
-                    leftSection={<IconUser size={14} />}
-                    component={Link}
-                    to="/user"
-                    w={200}
-                  >
+                  <Menu.Item leftSection={<IconUser size={14} />} w={200}>
                     My account
                   </Menu.Item>
-                  <Menu.Item
-                    leftSection={<IconSettings size={14} />}
-                    component={Link}
-                    to="/user/setting"
-                  >
+                  <Menu.Item leftSection={<IconSettings size={14} />}>
                     Settings
                   </Menu.Item>
                   <Menu.Item

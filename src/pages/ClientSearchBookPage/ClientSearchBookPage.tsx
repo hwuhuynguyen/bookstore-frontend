@@ -1,7 +1,6 @@
 import {
   Button,
   Center,
-  Checkbox,
   Chip,
   Container,
   Grid,
@@ -419,14 +418,14 @@ function ClientSearchBookPage() {
                   </Radio.Group>
                 </Stack>
 
-                <Stack>
+                {/* <Stack>
                   <Text fw={500}>Other</Text>
                   <Checkbox
                     label="Only in stock"
                     checked={true}
                     onChange={() => console.log()}
                   />
-                </Stack>
+                </Stack> */}
               </Stack>
             </Grid.Col>
 
