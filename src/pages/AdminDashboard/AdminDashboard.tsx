@@ -89,7 +89,7 @@ const AdminDashboard = () => {
   };
 
   const sortedOrderStatus = statusOrder.map((status) => {
-    const found = statistic.orderStatusStats.find((s) => s.status === status);
+    const found = statistic?.orderStatusStats?.find((s) => s.status === status);
     return {
       status,
       total: found ? found.total : 0,

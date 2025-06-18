@@ -70,8 +70,7 @@ function ClientOrderDetailPage() {
     mutationFn: (request: UpdateOrderStatusRequest) =>
       FetchUtils.putWithToken(
         `${ResourceURL.CLIENT_ORDER}/${request.orderStatus}/status`,
-        { orderStatus: "COMPLETED" },
-        true
+        { orderStatus: "COMPLETED" }
       ),
 
     onSuccess: () => {
