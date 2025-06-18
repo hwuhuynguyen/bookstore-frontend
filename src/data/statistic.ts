@@ -36,4 +36,5 @@ export const MOCK_STATISTIC_DATA: DashboardResponse = {
     { total: 4, date: "2025-05-21T17:00:00.000+00:00" },
     { total: 5, date: "2025-05-22T17:00:00.000+00:00" },
   ],
+  orderStatusStats: []
 };
